@@ -1,8 +1,7 @@
-function phi_save(phi, n, E0)
+function phi_save(phi, timept, E0, time_start, testcase)
     
-    len = length(phi);
-    initialguess_file = [pwd '/optIC/phi_E0_' num2str(E0) '_' num2str(len) '_2048cont0.dat'];
-    if n > 1
+    initialguess_file = [pwd '/optIC/phi_E0_' num2str(E0) '_' testcase '.dat'];
+    if timept ~= time_start
         previous_phi = readmatrix(initialguess_file);
         phi_initialguess = [ previous_phi ; phi ];
     else

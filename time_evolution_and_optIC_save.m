@@ -1,4 +1,4 @@
-function f_ens = time_evolution_and_optIC_save(Ntime,phi,timept,E0,lambda,T,N,uField,testcase,K0)
+function f_ens = time_evolution_and_optIC_save(Ntime,phi,timept,E0,lambda,T,N,uField,testcase,K0,time_start)
 %{
 Part 1: Add time evolution ( For each E0 at T = 1, 0 mod 10, end) of Enstrophy:
 (1) [ Time, Enstrophy(time) ]
@@ -53,13 +53,13 @@ Part 2: Add optimal initial conditions in Fourier and Physical Space:
     f_ens( : , all(~f_ens,1) ) = []; % remove zero cols corresponding to f_ens
     f_ens = [ 0, f_ens ]; % start at ET - E0 = 0
     current = zeros(1);
-    if timept ~= 1
+    if timept ~= time_start
         current = readmatrix(terminal_E0_file);
     end
     current_size = [ size(current,1) , size(f_ens,2) ];
     size_choice = max(current_size);
     enstrophy_time_final = zeros(size_choice, 2*timept); % make 2 column matrix
-    if timept ~= 1
+    if timept ~= time_start
         enstrophy_time_final( 1:size(current,1) , 1:((2*timept)-2) ) = readmatrix(terminal_E0_file); 
     end
     enstrophy_time_final( 1:size(t_evolution,2) , (2*timept)-1 ) = t_evolution; % append new time window

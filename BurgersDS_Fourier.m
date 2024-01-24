@@ -8,16 +8,13 @@ nu: viscosity coefficient
 N: number of grid points
 %}
     
-    % factor = 0.00025;
-    % filter = 1./(1+(factor*2*pi*K1).^2);
-    
     UMAX = max(abs(real(ifft(u0_hat))));
     DT = 1/(N*UMAX); %timestep below this
     dt = T/50;
     while dt>DT
         dt = 0.95*dt;
     end
-    % dt = dt / 10; %[advecfix5: dt/2], [advecfix6: dt/10]
+    dt = dt / 100; % adjust time step manually
     Ntime = ceil(T/dt);
     tvec = linspace(0,T,Ntime);
     tvec = tvec.';
@@ -40,7 +37,6 @@ N: number of grid points
         R1 = -0.5*(2*pi*1i*K0).*multiply(y2_hat,y2_hat,'fourier');
         u1_hat = ( (1-nu*(dt/6)*(2*pi*K1).^2).*y2_hat + (3*dt/4)*R1 - (5*dt/12)*R0 )./( 1+nu*(dt/6)*(2*pi*K1).^2 );
     
-        % u1_hat = filter.*u1_hat; % [advecfix3 - no filter]
         solution(i,:) = u1_hat;
         u0_hat = u1_hat;
             
@@ -48,36 +44,3 @@ N: number of grid points
 
 return
 
-%{
-if toPlot
-    figure; hold on; grid on;
-    
-    plot(x,real(ifft(solution(1,:))),'--r');
-    plot(x,real(ifft(solution(Ntime,:))));
-    xlabel('x')
-    ylabel('u(x)');
-    nuVal = num2str(nu);
-    myTitle = ['Solution to Burgers Equation with \nu = ' nuVal];
-    title(myTitle);
-    legend('Initial condition','Solution at time T');
-end
-
-function sol = RHS(t,y)
-
-global nu;
-global K0; global K1; global I;
-
-sol = -nu*(2*pi*K1).^2.*y.' - 0.5*(2*pi*I*K0).*multiply(y.',y.','fourier');
-sol = sol.';
-
-return
-
-function sol = RHSjacobian(t,y)
-
-global nu; global K1;
-
-vec = -nu*(2*pi*K1).^2;
-sol = diag(vec);
-
-return
-%}
