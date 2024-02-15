@@ -1,4 +1,4 @@
-function solution = BurgersAS_Fourier(uu,K1,K0,T,nu,N,uField,tvector)
+function solution = BurgersAS_Fourier(uu,K1,K0,T,nu,N,uField,tvector,stepscale)
 
 %{
 K1: fourier space domain for derivative 1 
@@ -18,7 +18,7 @@ tvector: solution timepoints
     while dt>DT
         dt = 0.95*dt;
     end
-    dt = dt / 50; % adjust time step manually
+    dt = dt / stepscale; % adjust time step manually
     N_time = ceil(T/dt);
     tvec = linspace(T,0,N_time);
     tvec = tvec.';

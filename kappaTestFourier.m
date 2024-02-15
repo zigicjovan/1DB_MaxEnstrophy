@@ -1,4 +1,4 @@
-function [epsilon,kappa] = kappaTestFourier(phi,grad,grad_x,J_phi,x,K1,K0,T,nu,N,lambda)
+function [epsilon,kappa] = kappaTestFourier(phi,grad,grad_x,J_phi,x,K1,K0,T,nu,N,lambda,stepscale)
 
 %{
 phi: optimal IC
@@ -30,7 +30,7 @@ lambda: length-scale parameter
         for j=1:NumPoints
             phiBar = phi + epsilon(j)*phi_pert;
             
-            [tvec,u] = BurgersDS_Fourier(phiBar,K1,K0,T,nu,N);
+            [tvec,u] = BurgersDS_Fourier(phiBar,K1,K0,T,nu,N,stepscale);
             Ntime = length(tvec);
             uu = u(Ntime,:);
             ux = (2*pi*1i*K0).*uu;

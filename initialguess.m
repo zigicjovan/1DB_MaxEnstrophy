@@ -1,4 +1,4 @@
-function solution = initialguess(type,x,E0,a1,x_ref,timept)
+function solution = initialguess(type,x,E0,a1,x_ref,timept,time_start)
     
     switch type
         case 'sine'
@@ -16,11 +16,11 @@ function solution = initialguess(type,x,E0,a1,x_ref,timept)
             solution = fft(solution);
         case 'optIC'
             try
-                length_ref = length(x_ref);
-                phi_guess_file = [pwd '/optIC/phi_E0_' num2str(E0) '_' num2str(length_ref) '_cont0.dat'];
+                phi_guess_file = [pwd '/optIC/phi_E0_' num2str(E0) '__4096_optIC2048ContLu7.dat'];
                 phi_guess = readmatrix(phi_guess_file);
                 solution = phi_guess(timept,:);
                 solution = real(ifft(solution));
+                length_ref = length(solution);
                 if length(x) ~= length_ref
                     solution = interp1(x_ref, solution , x, 'spline');
                 end

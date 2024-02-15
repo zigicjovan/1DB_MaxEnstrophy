@@ -1,4 +1,4 @@
-function [tvec,solution]=BurgersDS_Fourier(u0_hat,K1,K0,T,nu,N)
+function [tvec,solution]=BurgersDS_Fourier(u0_hat,K1,K0,T,nu,N,stepscale)
 
 %{
 K1: fourier space domain for derivative 1 
@@ -14,7 +14,7 @@ N: number of grid points
     while dt>DT
         dt = 0.95*dt;
     end
-    dt = dt / 100; % adjust time step manually
+    dt = dt / stepscale; % adjust time step manually
     Ntime = ceil(T/dt);
     tvec = linspace(0,T,Ntime);
     tvec = tvec.';

@@ -1,4 +1,4 @@
-function f_ens = time_evolution_and_optIC_save(Ntime,phi,timept,E0,lambda,T,N,uField,testcase,K0,time_start)
+function f_ens = time_evolution_and_optIC_save(Ntime,phi,timept,E0,lambda,T,N,uField,testcase,K0,time_start,stepscale)
 %{
 Part 1: Add time evolution ( For each E0 at T = 1, 0 mod 10, end) of Enstrophy:
 (1) [ Time, Enstrophy(time) ]
@@ -26,7 +26,7 @@ Part 2: Add optimal initial conditions in Fourier and Physical Space:
 
     % Make enstrophy time growth file
     % track spectrum for enstrophy time evolution
-    eval_pts = Ntime;
+    eval_pts = ceil(Ntime/stepscale);
     t_evolution = linspace(0,T,Ntime);
     f_ens = zeros(size(t_evolution));
     K_w = N/2;
