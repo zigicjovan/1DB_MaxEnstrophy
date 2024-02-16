@@ -13,16 +13,15 @@ Part 2: Add optimal initial conditions in Fourier and Physical Space:
 [ N, interpft(real(ifft(phi)) ]
 %}
 
-    % initial_E0_file = [pwd '/data/time_evolution/initial_E0(' num2str(E0) ')_T_' num2str(T) '_lambda(' num2str(L) ')_case3.dat'];
     terminal_E0_file = [pwd '/data/time_evolution/terminal' testcase...
-        '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ')_case3.dat'];
+        '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
 
     optIC_phys_file = [pwd '/data/spectrum/spectrum_E0_' num2str(E0)...
         '/optICphys' testcase '_E0(' num2str(E0) ')_Timept_'...
-        num2str(timept) '_lambda(' num2str(lambda) ')_case3.dat'];
+        num2str(timept) '_lambda(' num2str(lambda) ').dat'];
     optIC_four_file = [pwd '/data/spectrum/spectrum_E0_' num2str(E0)...
         '/optICfour' testcase '_E0(' num2str(E0) ')_Timept_'...
-        num2str(timept) '_lambda(' num2str(lambda) ')_case3.dat'];
+        num2str(timept) '_lambda(' num2str(lambda) ').dat'];
 
     % Make enstrophy time growth file
     % track spectrum for enstrophy time evolution
@@ -67,7 +66,6 @@ Part 2: Add optimal initial conditions in Fourier and Physical Space:
     enstrophy_time_final( enstrophy_time_final == 0 ) = NaN; % replace zeros with NaN
     enstrophy_time_final( 1 , : ) = 0; % replace first row NaN with zeros
 
-    % writematrix(enstrophy_time_init, initial_E0_file,'Delimiter','tab');
     writematrix(enstrophy_time_final, terminal_E0_file,'Delimiter','tab');
 
 return

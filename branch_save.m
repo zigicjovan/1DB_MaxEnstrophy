@@ -10,9 +10,9 @@ Add branch evolution ( For each E0 at T = 1:end) of Enstrophy and Energy:
 %}
 
     branch_maxE0_file = [pwd '/data/enstrophy_solution/maxenstrophy'...
-        testcase '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ')_case3.dat'];
+        testcase '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
     branch_finalE0_file = [pwd '/data/enstrophy_solution/finalenstrophy'...
-        testcase '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ')_case3.dat'];
+        testcase '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
 
     % % Make final energy evolution file
     % % [ T , max(K_T(phi^(n))) ]

@@ -17,10 +17,10 @@ for enspt = ens_start:EnstPoints
     TimeWindow = linspace(T_ens_LB,T_ens_UB,TimePoints); 
 
     terminal_E0_file = [pwd '/data/time_evolution/terminal' testcase...
-        '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ')_case3.dat'];
+        '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
     branch_maxE0_file = [pwd '/data/enstrophy_solution/maxenstrophy'...
-        testcase '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ')_case3_2.dat'];
-    E0_vsEmax_file = [pwd '/data/enstrophy_solution/E0_vsEmax' testcase '_lambda(' num2str(lambda) ')_case3_2.dat'];
+        testcase '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
+    E0_vsEmax_file = [pwd '/data/enstrophy_solution/E0_vsEmax' testcase '_lambda(' num2str(lambda) ').dat'];
 
     for timept = 1:TimePoints
                 

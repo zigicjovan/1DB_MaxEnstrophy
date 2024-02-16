@@ -33,8 +33,8 @@ for i = 2 : ceil(Ntime/500) : Ntime
     pbaspect( [ max(max(t)), max(max(x)), max(max(optIC_phys(:,9:end-1))) ] );
     surf(T(:,1:i),X(:,1:i),optIC_phys(:,9:(9+i-1)))
     shading(gca,'interp')
-    % axis( [ 0 max(max(t))  0 max(max(x))  min(min(optIC_phys(:,9:(9+i-1)))) max(max(optIC_phys(:,9:(9+i-1)))) ] )
-    %
+    axis( [ 0 max(max(t))  0 max(max(x))  min(min(optIC_phys(:,9:(9+i-1)))) max(max(optIC_phys(:,9:(9+i-1)))) ] )
+    %{
     if i < 280
         axis( [ 0 max(max(t))  0 max(max(x))  min(min(optIC_phys(:,9:(9+280-1)))) max(max(optIC_phys(:,9:(9+280-1)))) ] )
     elseif i < 580   

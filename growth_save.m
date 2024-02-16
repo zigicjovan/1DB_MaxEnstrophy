@@ -1,10 +1,10 @@
 function growth_save(lambda,E0,testcase)
     
-    E0_vsEmax_file = [pwd '/data/enstrophy_solution/E0_vsEmax' testcase '_lambda(' num2str(lambda) ')_case3.dat'];
+    E0_vsEmax_file = [pwd '/data/enstrophy_solution/E0_vsEmax' testcase '_lambda(' num2str(lambda) ').dat'];
 
     % Make optimal IC for [E0 , T] file
     % [ E0, E_max, index of max T, index of max t , max T ]
-    branch_maxE0_file = [pwd '/data/enstrophy_solution/maxenstrophy' testcase '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ')_case3.dat'];
+    branch_maxE0_file = [pwd '/data/enstrophy_solution/maxenstrophy' testcase '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
     enstrophy_branch_max = readmatrix(branch_maxE0_file);
     E0_vsEmax = zeros(1, 5); % make 4 column matrix
     E0_vsEmax(1,1) = E0; % initial enstrophy in col 1

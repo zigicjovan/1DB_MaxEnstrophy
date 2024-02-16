@@ -8,7 +8,7 @@ VERBOSE 1: Add master diagnostics file and optimal initial conditions in physica
 
     master_file = [pwd '/data/diagnostics/diagnostics_E0_' num2str(E0)...
         '/diag' testcase '_E0(' num2str(E0) ')_Timept_' num2str(timept)...
-        '_lambda(' num2str(lambda) ')_case3.dat'];
+        '_lambda(' num2str(lambda) ').dat'];
 
     % Make master diagnostics file
     %[ n(iter), E_T(phi^(n)), K_T(phi^(n)), tau_n, beta_n ]

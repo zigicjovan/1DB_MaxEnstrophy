@@ -5,9 +5,9 @@ product
 %}
 
     kappa_E0_file = [pwd '/data/kappa/kappa_E0_' num2str(E0) '/kappa' testcase '_E0(' num2str(E0) ')' ...
-        '_Timept_' num2str(timept) '_lambda(' num2str(lambda) ')_case3.dat'];
+        '_Timept_' num2str(timept) '_lambda(' num2str(lambda) ').dat'];
     abskappa_E0_file = [pwd '/data/kappa/kappa_E0_' num2str(E0) '/abskappa' testcase '_E0(' num2str(E0) ')' ...
-        '_Timept_' num2str(timept) '_lambda(' num2str(lambda) ')_case3.dat'];
+        '_Timept_' num2str(timept) '_lambda(' num2str(lambda) ').dat'];
 
     % Make kappa file
     % [ epsilon, kappa(iter = 1), kappa(iter = 2), ... ]
