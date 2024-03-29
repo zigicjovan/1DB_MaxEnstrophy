@@ -1,0 +1,22 @@
+term0_file = [pwd '/data/time_evolution/terminal_2048_Lu_t4_E0(1000)_lambda(0.5).dat'];
+term1_file = [pwd '/data/time_evolution/terminal_4096_slingshot1_t2_E0(1000)_lambda(0.5).dat'];
+term2_file = [pwd '/data/time_evolution/terminal_4096_slingshot2_t2_E0(1000)_lambda(0.5).dat'];
+term3_file = [pwd '/data/time_evolution/terminal_4096_slingshot3_t2_E0(1000)_lambda(0.5).dat'];
+term4_file = [pwd '/data/time_evolution/terminal_4096_slingshot4_t2_E0(1000)_lambda(0.5).dat'];
+term5_file = [pwd '/data/time_evolution/terminal_4096_slingshot5_t2_E0(1000)_lambda(0.5).dat'];
+term6_file = [pwd '/data/time_evolution/terminal_4096_slingshot6_t2_E0(1000)_lambda(0.5).dat'];
+term0 = readmatrix(term0_file);
+term1 = readmatrix(term1_file);
+term2 = readmatrix(term2_file);
+term3 = readmatrix(term3_file);
+term4 = readmatrix(term4_file);
+term5 = readmatrix(term5_file);
+term6 = readmatrix(term6_file);
+
+t0max = find(term0(:,26) == max(term0(:,26)));
+t1max = find(term1(:,26) == max(term1(:,26)));
+t2max = find(term2(:,26) == max(term2(:,26)));
+t3max = find(term3(:,26) == max(term3(:,26)));
+t4max = find(term4(:,26) == max(term4(:,26)));
+t5max = find(term5(:,26) == max(term5(:,26)));
+t6max = find(term6(:,26) == max(term6(:,26)));
