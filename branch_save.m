@@ -32,7 +32,7 @@ Add branch evolution ( For each E0 at T = 1:end) of Enstrophy and Energy:
     % [ T , max(E(T)) , branch point , time point ]
     enstrophy_branch_max = zeros(1, 4); % make 2 column matrix
     enstrophy_branch_max(1,1) = T; % time point number in col 1
-    [ maxens , indmax ] = max(f_ens);
+    [ maxens , indmax ] = max(f_ens); % indmax = find(f_ens(:) == max(f_ens(:)));
     enstrophy_branch_max(1,2) = maxens; % max enstrophy in col 2
     enstrophy_branch_max(1,3) = timept; % branch point in col 3
     enstrophy_branch_max(1,4) = indmax; % max enstrophy time point in col 4

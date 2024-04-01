@@ -25,17 +25,28 @@ Part 2: Add optimal initial conditions in Fourier and Physical Space:
     optIC_fourfull_file = [pwd '/data/spectrum/spectrum_E0_' num2str(E0)...
         '/optICfourfull' testcase '_E0(' num2str(E0) ')_Timept_'...
         num2str(timept) '_lambda(' num2str(lambda) ').dat'];
+    deriv_file = [pwd '/data/spectrum/spectrum_E0_' num2str(E0) '/deriv_optICphys'...
+        testcase '_E0(' num2str(E0) ')_Timept_'...
+        num2str(timept) '_lambda(' num2str(lambda) ').dat'];
+    derivfdm_file = [pwd '/data/spectrum/spectrum_E0_' num2str(E0) '/derivfdm_optICphys'...
+        testcase '_E0(' num2str(E0) ')_Timept_'...
+        num2str(timept) '_lambda(' num2str(lambda) ').dat'];
 
     % Make enstrophy time growth file
     % track spectrum for enstrophy time evolution
     eval_pts = ceil(Ntime/stepscale);
     t_evolution = linspace(0,T,Ntime);
+    dt = t_evolution(2) - t_evolution(1);
     f_ens = zeros(size(t_evolution));
     K_w = N/2;
     optPhi_phys = zeros(N, eval_pts);
+    du_phys = zeros(N, eval_pts); % absolute derivative of physical solution
+    du_phys_fdm = zeros(N, eval_pts); 
     optPhi_four = zeros(K_w, eval_pts);
     optPhi_fourfull = zeros(N, eval_pts);
     optPhi_phys(:,1) = 1:N; % physical space
+    du_phys(:,1) = optPhi_phys(:,1); 
+    du_phys_fdm(:,1) = optPhi_phys(:,1); 
     optPhi_four(:,1) = 1:K_w; % wavenumbers
     optPhi_fourfull(:,1) = 1:N; % wavenumbers
 
@@ -43,14 +54,25 @@ Part 2: Add optimal initial conditions in Fourier and Physical Space:
         i_current = ceil(length(f_ens)*(i/eval_pts));
         ut = uField(i_current,:);
         f_ens(i_current) = eval_J(ut,phi,K0,N); % enstrophy value at t_i
-        f_phi = adjust_optIC( phi , E0 + f_ens(i_current) , K0 , N ); % phi value at t_i                 
+        f_phi = adjust_optIC( phi , E0 + f_ens(i_current) , K0 , N ); % phi value at t_i  
+        f_phi_x = (2*pi*1i*K0).*f_phi; % spectral derivative
         optPhi_phys(:,i) = interpft(real(ifft(f_phi)),N);
+        du_phys(:,i) = abs(real(ifft(f_phi_x))); % absolute value of derivative
+
+        du_phys_fdm(1,i) = abs( ( optPhi_phys(2,i) - 2*optPhi_phys(1,i) + optPhi_phys(N,i) ) / (dt^2) ) ;
+        for j = 2 : N-1
+            du_phys_fdm(j,i) = abs( ( optPhi_phys(j+1,i) - 2*optPhi_phys(j,i) + optPhi_phys(j-1,i) ) / (dt^2) ) ;
+        end
+        du_phys_fdm(N,i) = abs( ( optPhi_phys(1,i) - 2*optPhi_phys(N,i) + optPhi_phys(N-1,i) ) / (dt^2) ) ;
+
         % shift periodic solution
         if i == 2 
             shift = find( optPhi_phys(:,i) < 1e-1 & optPhi_phys(:,i) > -1e-1 , 1, 'first');
         end
         if shift > 1
             optPhi_phys(:,i) = [ optPhi_phys(shift:end,i) ; optPhi_phys(1:shift-1,i) ];
+            du_phys(:,i) = [ du_phys(shift:end,i) ; du_phys(1:shift-1,i) ];
+            du_phys_fdm(:,i) = [ du_phys_fdm(shift:end,i) ; du_phys_fdm(1:shift-1,i) ];
         end 
         optPhi_four(:,i) = abs(f_phi(2 : K_w + 1));
         optPhi_fourfull(:,i) = f_phi;
@@ -60,6 +82,8 @@ Part 2: Add optimal initial conditions in Fourier and Physical Space:
     writematrix(optPhi_phys, optIC_phys_file,'Delimiter','tab');
     writematrix(optPhi_four, optIC_four_file,'Delimiter','tab');
     writematrix(optPhi_fourfull, optIC_fourfull_file,'Delimiter','tab');
+    writematrix(du_phys, deriv_file,'Delimiter','tab');
+    writematrix(du_phys_fdm, derivfdm_file,'Delimiter','tab');
 
     t_evolution( : , all(~f_ens,1) ) = []; % remove zero cols corresponding to f_ens
     t_evolution = [ 0, t_evolution ]; % start at t = 0

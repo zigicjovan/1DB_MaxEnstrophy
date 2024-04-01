@@ -101,7 +101,7 @@ function [ solution , T ] = initialguess(type,x,E0,a1,x_ref,timept,tptest)
         case 'slingshot1'
             
             optIC_phys_file = [pwd '/data/spectrum/spectrum_E0_' num2str(1000) '/optICphys_' ...
-                num2str(length(x_ref)*1) '_LuFour_long_E0(' num2str(1000) ')_Timept_3_lambda(0.5).dat'];
+                num2str(length(x_ref)*1) '_LuFour_long_E0(1000)_Timept_3_lambda(0.5).dat'];
             optIC_phys = readmatrix(optIC_phys_file);         
             optIC_four_file = [pwd '/data/spectrum/spectrum_E0_' num2str(1000) '/optICfourfull_' ...
                 num2str(length(x_ref)*1) '_LuFour_long_E0(' num2str(1000) ')_Timept_3_lambda(0.5).dat'];
@@ -138,7 +138,7 @@ function [ solution , T ] = initialguess(type,x,E0,a1,x_ref,timept,tptest)
         case 'slingshot2'
 
             optIC_phys_file = [pwd '/data/spectrum/spectrum_E0_' num2str(1000) '/optICphys_' ...
-                num2str(length(x_ref)*1) '_slingshotTlong_long3_E0(' num2str(1000) ')_Timept_10_lambda(0.5).dat'];
+                num2str(length(x_ref)*1) '_slingshotTlong_long3_E0(1000)_Timept_10_lambda(0.5).dat'];
             optIC_phys = readmatrix(optIC_phys_file);         
             optIC_four_file = [pwd '/data/spectrum/spectrum_E0_' num2str(1000) '/optICfourfull_' ...
                 num2str(length(x_ref)*1) '_slingshotTlong_long3_E0(' num2str(1000) ')_Timept_10_lambda(0.5).dat'];
@@ -157,8 +157,7 @@ function [ solution , T ] = initialguess(type,x,E0,a1,x_ref,timept,tptest)
             end 
 
             % use branch data to find T = T(Emax) - T(root)
-            maxbranch_file = [pwd '/data/enstrophy_solution/maxenstrophy_' num2str(length(x_ref)*1) '_slingshotTlong_long3_E0(' ...
-                num2str(1000) ')_lambda(0.5).dat'];
+            maxbranch_file = [pwd '/data/enstrophy_solution/maxenstrophy_' num2str(length(x_ref)*1) '_slingshotTlong_long3_E0(1000)_lambda(0.5).dat'];
             maxbranch = readmatrix(maxbranch_file); 
             finalbranch_file = [pwd '/data/enstrophy_solution/finalenstrophy_' num2str(length(x_ref)*1) '_slingshotTlong_long3_E0(' ...
                 num2str(1000) ')_lambda(0.5).dat'];
@@ -175,7 +174,7 @@ function [ solution , T ] = initialguess(type,x,E0,a1,x_ref,timept,tptest)
         case 'slingshot3'
 
             optIC_phys_file = [pwd '/data/spectrum/spectrum_E0_' num2str(1000) '/optICphys_' ...
-                num2str(length(x_ref)*1) '_slingshot2Tlong2_long10_E0(' num2str(1000) ')_Timept_29_lambda(0.5).dat'];
+                num2str(length(x_ref)*1) '_slingshot2Tlong2_long10_E0(1000)_Timept_29_lambda(0.5).dat'];
             optIC_phys = readmatrix(optIC_phys_file);         
             optIC_four_file = [pwd '/data/spectrum/spectrum_E0_' num2str(1000) '/optICfourfull_' ...
                 num2str(length(x_ref)*1) '_slingshot2Tlong2_long10_E0(' num2str(1000) ')_Timept_29_lambda(0.5).dat'];
@@ -212,7 +211,7 @@ function [ solution , T ] = initialguess(type,x,E0,a1,x_ref,timept,tptest)
         case 'slingshot4'
 
             optIC_phys_file = [pwd '/data/spectrum/spectrum_E0_' num2str(1000) '/optICphys_' ...
-                num2str(length(x_ref)*1) '_slingshot3Tfull_long29_E0(' num2str(1000) ')_Timept_19_lambda(0.5).dat'];
+                num2str(length(x_ref)*1) '_slingshot3Tfull_long29_E0(1000)_Timept_19_lambda(0.5).dat'];
             optIC_phys = readmatrix(optIC_phys_file);         
             optIC_four_file = [pwd '/data/spectrum/spectrum_E0_' num2str(1000) '/optICfourfull_' ...
                 num2str(length(x_ref)*1) '_slingshot3Tfull_long29_E0(' num2str(1000) ')_Timept_19_lambda(0.5).dat'];
@@ -249,7 +248,7 @@ function [ solution , T ] = initialguess(type,x,E0,a1,x_ref,timept,tptest)
         case 'slingshot5'
 
             optIC_phys_file = [pwd '/data/spectrum/spectrum_E0_' num2str(1000) '/optICphys_' ...
-                num2str(length(x_ref)*1) '_slingshot4Tlong_full19_E0(' num2str(1000) ')_Timept_27_lambda(0.5).dat'];
+                num2str(length(x_ref)*1) '_slingshot4Tlong_full19_E0(1000)_Timept_27_lambda(0.5).dat'];
             optIC_phys = readmatrix(optIC_phys_file);         
             optIC_four_file = [pwd '/data/spectrum/spectrum_E0_' num2str(1000) '/optICfourfull_' ...
                 num2str(length(x_ref)*1) '_slingshot4Tlong_full19_E0(' num2str(1000) ')_Timept_27_lambda(0.5).dat'];
@@ -286,7 +285,7 @@ function [ solution , T ] = initialguess(type,x,E0,a1,x_ref,timept,tptest)
         case 'slingshot6'
 
             optIC_phys_file = [pwd '/data/spectrum/spectrum_E0_' num2str(1000) '/optICphys_' ...
-                num2str(length(x_ref)*1) '_slingshot4Tlong_full19_E0(' num2str(1000) ')_Timept_31_lambda(0.5).dat'];
+                num2str(length(x_ref)*1) '_slingshot4Tlong_full19_E0(1000)_Timept_31_lambda(0.5).dat'];
             optIC_phys = readmatrix(optIC_phys_file);         
             optIC_four_file = [pwd '/data/spectrum/spectrum_E0_' num2str(1000) '/optICfourfull_' ...
                 num2str(length(x_ref)*1) '_slingshot4Tlong_full19_E0(' num2str(1000) ')_Timept_31_lambda(0.5).dat'];

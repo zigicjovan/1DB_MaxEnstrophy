@@ -13,10 +13,10 @@ term4 = readmatrix(term4_file);
 term5 = readmatrix(term5_file);
 term6 = readmatrix(term6_file);
 
-t0max = find(term0(:,26) == max(term0(:,26)));
-t1max = find(term1(:,26) == max(term1(:,26)));
-t2max = find(term2(:,26) == max(term2(:,26)));
-t3max = find(term3(:,26) == max(term3(:,26)));
-t4max = find(term4(:,26) == max(term4(:,26)));
-t5max = find(term5(:,26) == max(term5(:,26)));
-t6max = find(term6(:,26) == max(term6(:,26)));
+[ t0m, t0i] = max(term0(:,26));
+[ t1m, t1i] = max(term1(:,26));
+[ t2m, t2i] = max(term2(:,26));
+[ t3m, t3i] = max(term3(:,26));
+[ t4m, t4i] = max(term4(:,26));
+[ t5m, t5i] = max(term5(:,26));
+[ t6m, t6i] = max(term6(:,26));
