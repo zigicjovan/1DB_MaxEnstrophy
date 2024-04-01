@@ -36,7 +36,7 @@ v2_0: slingshot search version 2
         % tptest = 3; % slingshot search parameter
         shiftT = 0; % time window shift parameter
 
-        for tptest = 0:0 % "shiftT" <-> sensitivity testing || "tptest" <-> slingshot searching
+        for tptest = 1:1 % "shiftT" <-> sensitivity testing || "tptest" <-> slingshot searching
             clearvars -except shiftT tptest s ss pm; 
             close all;
 
@@ -47,11 +47,11 @@ v2_0: slingshot search version 2
 
             % declare and initialize parameters %
             % [slingshot] tpts = 31;  Tfull: cancel specific TW, Tlong: also set UB = 1
-            CONT = 1; % ( 0: Lu, 1: cont, 2: 2048 opt IC, 3: slingshot )
+            % CONT = 1; % ( 0: Lu, 1: cont, 2: 2048 opt IC, 3: slingshot )
             ensstart = 1;
             ensend = 1;
             timestart = 1; % max occurs ~ timepoint 11
-            timeend = 15; % 31 for full/long, 15 for level test
+            timeend = 31; % 31 for full/long, 15 for level test
             %{
             if s == 1
                 timestart = 8;
@@ -113,6 +113,7 @@ v2_0: slingshot search version 2
                 % T_ens_UB = 1; % use for longer T
                 T_ens_LB = T_ens_UB/TimePoints; % Adjust for decreasing T_max  
                 TimeWindow = linspace(T_ens_LB,T_ens_UB,TimePoints); 
+                TimeWindow1 = linspace(T_ens_UB,1,TimePoints);
                 % adjust what timepoints are being tested
                 time_start = timestart; 
                 TimePoints = timeend; 
@@ -161,19 +162,6 @@ v2_0: slingshot search version 2
                                 end
                             end
                         end
-
-                        % manual continutation
-                        %{
-                        if enspt == 1
-                            if timept > 25
-                                CONT = 1;
-                            elseif timept < 7
-                                CONT = 1;
-                            else
-                                CONT = 3;
-                            end
-                        end
-                        %}
     
                         tic
                         % initialize diagnostics
@@ -202,13 +190,19 @@ v2_0: slingshot search version 2
                             E = 0.5*sum(abs(phi_x).^2)/N^2;
                         end
     
-                        T = TimeWindow(timept);
-                        if ss < 7
-                            s = ss;
-                            T = TimeWindow(timept)*(1000+shiftT)/1000;
+                        if timept < 32
+                            if ss < 7
+                                T = TimeWindow(timept)*(1000+shiftT)/1000;
+                            else
+                                T = TimeWindow(timept)*(1000-shiftT)/1000;
+                            end
                         else
-                            s = ss - 6;
-                            T = TimeWindow(timept)*(1000-shiftT)/1000;
+                            longtpt = timept - 30;
+                            if ss < 7
+                                T = TimeWindow1(longtpt)*(1000+shiftT)/1000;
+                            else
+                                T = TimeWindow1(longtpt)*(1000-shiftT)/1000;
+                            end
                         end
                         ITER = 1;
                         
