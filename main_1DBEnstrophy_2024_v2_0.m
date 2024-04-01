@@ -5,8 +5,8 @@ Updated by Jovan Zigic, 2024
 Description (by loop level):
 1. Choose initial data, and add +6 if shift in next level will be negative.
     Default: ss = 0 <-> initial data from (Doering, Lu 2009).
-2. Choose whether to shift time window T or search for slingshots.
-    Default: tptest = 1 || shiftT = 0 <-> not shifting or searching.
+2. Choose whether to shift time window T or test slingshot points.
+    Default: tptest = 1 || shiftT = 0 <-> not shifting or slingshot testing.
 3. Choose initial enstrophy values for computation.
     Default: E0 = 1000 <-> compute for initial enstrophy of 1000.
 4. Choose branch of time windows for computation for E0 level.
@@ -21,7 +21,7 @@ v1_1: slingshot tests within specific time window
 v1_2: fixed physical solution output (time_evol*)
 v1_3: create smoothing test (shift T), fix overwrite of evolution file
 v1_4: compute derivative (time_evol*), save max (cont/no cont)
-v2_0: slingshot search version 2
+v2_0: slingshot search version 2, temp spectrum files (max*, time*)
 %}
 
     for ss = 0:0 % slingshot initial data (0: original (LuLu), 1: slingshot 1, etc.)
@@ -51,7 +51,7 @@ v2_0: slingshot search version 2
             ensstart = 1;
             ensend = 1;
             timestart = 1; % max occurs ~ timepoint 11
-            timeend = 31; % 31 for full/long, 15 for level test
+            timeend = 61; % 31 for full/long, 15 for level test
             %{
             if s == 1
                 timestart = 8;
@@ -125,6 +125,7 @@ v2_0: slingshot search version 2
                         mkdir([pwd  '/data/time_evolution' ]);
                         mkdir([pwd  '/data/spectrum' ]);
                         mkdir([pwd  '/data/spectrum/spectrum_E0_' num2str(E0) '' ]);
+                        mkdir([pwd  '/data/spectrum/temp' ]);
                         mkdir([pwd  '/data/kappa/kappa_E0_' num2str(E0) '' ]);
                         mkdir([pwd  '/data/runtime' ]);
                     case 3
@@ -179,9 +180,9 @@ v2_0: slingshot search version 2
                             elseif (CONT == 3 || s > 0)
                                 shotname = ['slingshot' num2str(s) ''];
                                 [ phi , T_interval ] = initialguess(shotname, x, E0, 0, x_2048, timept,tptest);
-                                % Adjust time interval
-                                if timept == time_start
-                                    % TimeWindow = linspace( T_interval/2 , 2*T_interval , timeend ); %specific TW
+                                % Adjust time interval (only when testing slingshot points)
+                                if timept == time_start 
+                                    % TimeWindow = linspace( T_interval/2 , 2*T_interval , timeend ); 
                                 end
                             end
     
