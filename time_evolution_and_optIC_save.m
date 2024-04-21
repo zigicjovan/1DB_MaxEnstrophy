@@ -78,17 +78,30 @@ Part 2: Add optimal initial conditions in Fourier and Physical Space:
         optPhi_fourfull(:,i) = f_phi;
     end
 
-    % Save spectrum files
-    writematrix(optPhi_phys, optIC_phys_file,'Delimiter','tab');
-    writematrix(optPhi_four, optIC_four_file,'Delimiter','tab');
-    writematrix(optPhi_fourfull, optIC_fourfull_file,'Delimiter','tab');
-    writematrix(du_phys, deriv_file,'Delimiter','tab');
-    writematrix(du_phys_fdm, derivfdm_file,'Delimiter','tab');
+    % remove zero cols corresponding to f_ens for all data
+    % start at 0 or indices
+    
+    t_evolution( : , all(~f_ens,1) ) = []; 
+    t_evolution = [ 0, t_evolution ]; 
 
-    t_evolution( : , all(~f_ens,1) ) = []; % remove zero cols corresponding to f_ens
-    t_evolution = [ 0, t_evolution ]; % start at t = 0
-    f_ens( : , all(~f_ens,1) ) = []; % remove zero cols corresponding to f_ens
-    f_ens = [ 0, f_ens ]; % start at ET - E0 = 0
+    optPhi_phys( : , all(~f_ens,1) ) = [];
+    optPhi_phys = [ du_phys(:,1) , optPhi_phys ]; 
+
+    optPhi_four( : , all(~f_ens,1) ) = [];
+    optPhi_four = [ optPhi_phys(1:K_w,1) , optPhi_four ]; 
+
+    optPhi_fourfull( : , all(~f_ens,1) ) = [];
+    optPhi_fourfull = [ optPhi_phys(:,1) , optPhi_fourfull ]; 
+
+    du_phys( : , all(~f_ens,1) ) = [];
+    du_phys = [ optPhi_phys(:,1) , du_phys ]; 
+
+    du_phys_fdm( : , all(~f_ens,1) ) = [];
+    du_phys_fdm = [ optPhi_phys(:,1) , du_phys_fdm ]; 
+
+    f_ens( : , all(~f_ens,1) ) = []; 
+    f_ens = [ 0, f_ens ]; 
+    
     current = zeros(1);
     try
         current = readmatrix(terminal_E0_file);
@@ -113,6 +126,12 @@ Part 2: Add optimal initial conditions in Fourier and Physical Space:
     enstrophy_time_final( enstrophy_time_final == 0 ) = NaN; % replace zeros with NaN
     enstrophy_time_final( 1 , : ) = 0; % replace first row NaN with zeros
 
+    % Save spectrum files
+    writematrix(optPhi_phys, optIC_phys_file,'Delimiter','tab');
+    writematrix(optPhi_four, optIC_four_file,'Delimiter','tab');
+    writematrix(optPhi_fourfull, optIC_fourfull_file,'Delimiter','tab');
+    writematrix(du_phys, deriv_file,'Delimiter','tab');
+    writematrix(du_phys_fdm, derivfdm_file,'Delimiter','tab');
     writematrix(enstrophy_time_final, terminal_E0_file,'Delimiter','tab');
 
 return

@@ -1,8 +1,12 @@
-function max_save(timept,lambda,E0,testcase_max,testcase_old)
+function max_save(timept,lambda,E0,testcase_max,testcase_old,testcase_other,timeend)
 
     % diagnostics 
     master_file_old = [pwd '/data/diagnostics/diagnostics_E0_' num2str(E0)...
         '/diag' testcase_old '_E0(' num2str(E0) ')_Timept_' num2str(timept)...
+        '_lambda(' num2str(lambda) ').dat'];
+
+    master_file_other = [pwd '/data/diagnostics/diagnostics_E0_' num2str(E0)...
+        '/diag' testcase_other '_E0(' num2str(E0) ')_Timept_' num2str(timept)...
         '_lambda(' num2str(lambda) ').dat'];
 
     master_file_new = [pwd '/data/diagnostics/diagnostics_E0_' num2str(E0)...
@@ -26,6 +30,24 @@ function max_save(timept,lambda,E0,testcase_max,testcase_old)
         num2str(timept) '_lambda(' num2str(lambda) ').dat'];
     derivfdm_file_old = [pwd '/data/spectrum/temp/derivfdm_optICphys'...
         testcase_old '_E0(' num2str(E0) ')_Timept_'...
+        num2str(timept) '_lambda(' num2str(lambda) ').dat'];
+
+    terminal_E0_file_other = [pwd '/data/time_evolution/terminal' testcase_other...
+        '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
+    optIC_phys_file_other = [pwd '/data/spectrum/temp/optICphys'...
+        testcase_other '_E0(' num2str(E0) ')_Timept_'...
+        num2str(timept) '_lambda(' num2str(lambda) ').dat'];
+    optIC_four_file_other = [pwd '/data/spectrum/temp/optICfour'...
+        testcase_other '_E0(' num2str(E0) ')_Timept_'...
+        num2str(timept) '_lambda(' num2str(lambda) ').dat'];
+    optIC_fourfull_file_other = [pwd '/data/spectrum/temp/optICfourfull'...
+        testcase_other '_E0(' num2str(E0) ')_Timept_'...
+        num2str(timept) '_lambda(' num2str(lambda) ').dat'];
+    deriv_file_other = [pwd '/data/spectrum/temp/deriv_optICphys'...
+        testcase_other '_E0(' num2str(E0) ')_Timept_'...
+        num2str(timept) '_lambda(' num2str(lambda) ').dat'];
+    derivfdm_file_other = [pwd '/data/spectrum/temp/derivfdm_optICphys'...
+        testcase_other '_E0(' num2str(E0) ')_Timept_'...
         num2str(timept) '_lambda(' num2str(lambda) ').dat'];
 
     terminal_E0_file_new = [pwd '/data/time_evolution/terminal' testcase_max...
@@ -52,6 +74,11 @@ function max_save(timept,lambda,E0,testcase_max,testcase_old)
     branch_finalE0_file_old = [pwd '/data/enstrophy_solution/finalenstrophy'...
         testcase_old '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
 
+    branch_maxE0_file_other = [pwd '/data/enstrophy_solution/maxenstrophy'...
+        testcase_other '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
+    branch_finalE0_file_other = [pwd '/data/enstrophy_solution/finalenstrophy'...
+        testcase_other '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
+
     branch_maxE0_file_new = [pwd '/data/enstrophy_solution/maxenstrophy'...
         testcase_max '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
     branch_finalE0_file_new = [pwd '/data/enstrophy_solution/finalenstrophy'...
@@ -70,7 +97,7 @@ function max_save(timept,lambda,E0,testcase_max,testcase_old)
     enstrophy_branch_max = readmatrix(branch_maxE0_file_old);
     enstrophy_branch_final = readmatrix(branch_finalE0_file_old);
 
-    if timept > 1
+    try
         enstrophy_time_final_new = readmatrix(terminal_E0_file_new);
         enstrophy_branch_max_new = readmatrix(branch_maxE0_file_new);
         enstrophy_branch_final_new = readmatrix(branch_finalE0_file_new);
@@ -90,6 +117,7 @@ function max_save(timept,lambda,E0,testcase_max,testcase_old)
             enstrophy_time_final_x( 1:r , (2*timept)-1:2*timept ) = enstrophy_time_final( 1:r , (2*timept)-1:2*timept );
             enstrophy_time_final = enstrophy_time_final_x;
         end
+    catch
         %
     end
 
@@ -106,6 +134,29 @@ function max_save(timept,lambda,E0,testcase_max,testcase_old)
     writematrix(enstrophy_branch_max, branch_maxE0_file_new,'Delimiter','tab');
     writematrix(enstrophy_branch_final, branch_finalE0_file_new,'Delimiter','tab');
 
-    % Delete other files in spectrum folder
+    % Delete timept files (not terminal or branch) and delete terminal or branch at last timept
+    delete(master_file_old);
+    delete(optIC_phys_file_old);
+    delete(optIC_four_file_old);
+    delete(optIC_fourfull_file_old);
+    delete(deriv_file_old);
+    delete(derivfdm_file_old);
+
+    delete(master_file_other);
+    delete(optIC_phys_file_other);
+    delete(optIC_four_file_other);
+    delete(optIC_fourfull_file_other);
+    delete(deriv_file_other);
+    delete(derivfdm_file_other);
+
+    if timept == timeend
+        delete(terminal_E0_file_old);
+        delete(branch_maxE0_file_old);
+        delete(branch_finalE0_file_old);
+
+        delete(terminal_E0_file_other);
+        delete(branch_maxE0_file_other);
+        delete(branch_finalE0_file_other);
+    end
 
 return
