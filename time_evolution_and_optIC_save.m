@@ -34,7 +34,7 @@ Part 2: Add optimal initial conditions in Fourier and Physical Space:
 
     % Make enstrophy time growth file
     % track spectrum for enstrophy time evolution
-    eval_pts = ceil(Ntime/stepscale);
+    eval_pts = ceil(Ntime); % evaluate all points instead of Ntime/stepscale
     t_evolution = linspace(0,T,Ntime);
     dt = t_evolution(2) - t_evolution(1);
     f_ens = zeros(size(t_evolution));

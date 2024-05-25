@@ -51,7 +51,7 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
     
     % FA > FB, tB ? tA
     
-    tC = tB + GOLD*(tB - tA); % initial right or center x %% abs to stay positive??
+    tC = tB + GOLD*(tB - tA); % initial right or center x 
     phi_bar = phi + tC*grad;
     phi_bar = adjust_optIC(phi_bar,Ens,K0,N);
     [tvec,u] = BurgersDS_Fourier(phi_bar,K1,K0,T,nu,N,stepscale);

@@ -8,3 +8,11 @@ v2_1 : fixed growth issues, global cleanup, increase tolerance
 v2_2 : add runtime, manual time_start, IC correction (in adjust_optIC)
 2024
 v1_0 : robust code, looking for new branches, change output names
+v1_1: slingshot tests within specific time window
+v1_2: fixed physical solution output (time_evol*)
+v1_3: create smoothing test (shift T), fix overwrite of evolution file
+v1_4: compute derivative (time_evol*), save max (cont/no cont)
+v2_0: slingshot search version 2, temp spectrum files (max*, time*)
+v2_1: evolution-spectrum match, delete Cont1 and Cont0 files (max_save)
+v2_2: identify redundancies (slingshots, tptest), keep sensitivity testing
+v3: clean up code and documentation

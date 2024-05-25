@@ -1,4 +1,6 @@
 function result = adjust_optIC(phi,E,K0,N) 
+
+    % Retraction to constraint manifold - see Ayala MS Thesis (3.23)
     
     % correction of non-zero mean solution
     if abs(mean(phi)) > 1e-5 

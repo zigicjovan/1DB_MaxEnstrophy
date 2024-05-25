@@ -1,5 +1,7 @@
 function [epsilon,kappa] = kappaTestFourier(phi,grad,grad_x,J_phi,x,K1,K0,T,nu,N,lambda,stepscale)
 
+% see Ayala MS Thesis section 4.1
+
 %{
 phi: optimal IC
 grad: gradient of objective functional
@@ -37,8 +39,8 @@ lambda: length-scale parameter
             phiBar_x = (2*pi*1i*K0).*phiBar;
             J_phiBar = 0.5*sum(abs(ux).^2)/N^2 - 0.5*sum(abs(phiBar_x).^2)/N^2; 
     
-            numerator(j,k) = (J_phiBar - J_phi)/(epsilon(j));
-            denominator(j,k) = innerProd;
+            numerator(j,k) = (J_phiBar - J_phi)/(epsilon(j)); % gateaux derivative
+            denominator(j,k) = innerProd; % derivative of objective functional
     
             kappa(j,k) = (J_phiBar - J_phi)/(epsilon(j)*innerProd);
         end
