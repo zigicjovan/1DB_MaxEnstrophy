@@ -122,9 +122,9 @@ Design (by level):
 
                     %%% name testcase for output data %%%
                     if s == 0
-                        testcase_max = [ '_' num2str(N) '_LuMax_t' num2str(stepscale) '_fine50' ];
-                        testcase1 = [ '_' num2str(N) '_LuCont1_t' num2str(stepscale) '_fine50' ];
-                        testcase0 = [ '_' num2str(N) '_LuCont0_t' num2str(stepscale) '_fine50' ];
+                        testcase_max = [ '_' num2str(N) '_LuMax_t' num2str(stepscale) '_new' ];
+                        testcase1 = [ '_' num2str(N) '_LuCont1_t' num2str(stepscale) '_new' ];
+                        testcase0 = [ '_' num2str(N) '_LuCont0_t' num2str(stepscale) '_new' ];
                         %%% other initial data if CONTSET == 2 %%%
                         testcase1_phi = [ '_' num2str(N) '_LuCont1_t' num2str(stepscale) '_short120' ];
                         testcase0_phi = [ '_' num2str(N) '_LuCont0_t' num2str(stepscale) '_short120' ];
@@ -181,7 +181,7 @@ Design (by level):
                         
                         % Initial condition of physical problem %
                         if ( timept == timestart || CONT ~= 1 ) 
-                            if CONT == 0
+                            if ( CONT == 0 || CONT == 1 )
                                 [ phi , ~ ] = initialguess('exact', x, E0, 0, x_2048, timept,tptest,testcase,lambda,ss_shift);
                             elseif CONT == 2
                                 [ phi , ~ ] = initialguess('optIC', x, E0, 0, x_2048, timept,tptest,testcase_phi,lambda,ss_shift);
