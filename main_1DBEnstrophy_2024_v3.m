@@ -59,9 +59,9 @@ Design (by level):
             % declare and initialize parameters %
             CONTSET = 0; % ( 0: Lu, 2: other data file, 3: slingshot testing )
             ensstart = 1;
-            ensend = 1;
+            ensend = 5;
             timestart = 1; % 
-            timeend = 3*19;% 
+            timeend = 25;% 
 
             N = 2048*Nscale; % number of grid points
             MAXITER = 1000; % this should never be reached
@@ -97,7 +97,7 @@ Design (by level):
                 TimePoints = 50; % number of timepoints in each initial enstrophy branch
                 T_ens_UB = prefactor*(1/sqrt(E0)); % use for max enstrophy T 
                 T_ens_LB = T_ens_UB/TimePoints; % Adjust for decreasing T_max  
-                TimeWindow = linspace(T_ens_LB,T_ens_UB,3*TimePoints); 
+                TimeWindow = linspace(T_ens_LB,T_ens_UB,TimePoints); 
         
                 % choose data output at each E0 %
                 switch VERBOSE
@@ -122,9 +122,9 @@ Design (by level):
 
                     %%% name testcase for output data %%%
                     if s == 0
-                        testcase_max = [ '_' num2str(N) '_LuMax_t' num2str(stepscale) '_new' ];
-                        testcase1 = [ '_' num2str(N) '_LuCont1_t' num2str(stepscale) '_new' ];
-                        testcase0 = [ '_' num2str(N) '_LuCont0_t' num2str(stepscale) '_new' ];
+                        testcase_max = [ '_' num2str(N) '_LuMax_t' num2str(stepscale) '_PR' ];
+                        testcase1 = [ '_' num2str(N) '_LuCont1_t' num2str(stepscale) '_PR' ];
+                        testcase0 = [ '_' num2str(N) '_LuCont0_t' num2str(stepscale) '_PR' ];
                         %%% other initial data if CONTSET == 2 %%%
                         testcase1_phi = [ '_' num2str(N) '_LuCont1_t' num2str(stepscale) '_short120' ];
                         testcase0_phi = [ '_' num2str(N) '_LuCont0_t' num2str(stepscale) '_short120' ];
@@ -199,9 +199,10 @@ Design (by level):
                                 end
                             end
     
-                            phi = adjust_optIC(phi,E0,K0,N); % initial data 
+                            phi = retraction(phi,E0,K0,N); % initial data 
                             phi_x = 2*pi*1i*K0.*phi; % derivative of initial data
                             E = 0.5*sum(abs(phi_x).^2)/N^2; % enstrophy E0 for retraction
+                            psi = phi; % projection term
                         end
     
                         if shiftsign < 2
@@ -235,7 +236,9 @@ Design (by level):
                         direction = gradJ; % direction towards optimal solution
                         tau = optimize_tau(phi,direction,abs(0.2*tau),E,K1,K0,T,nu,N,stepscale); % compute initial optimal step size 
                         phi = phi + tau*direction; % iterative solution update
-                        phi = adjust_optIC(phi,E,K0,N); % retraction to constraint manifold
+                        psi = phi; % projection term
+                        phi = retraction(phi,E,K0,N); % retraction to constraint manifold
+                        % dir_x = (2*pi*1i*K0).*direction; % derivative of gradient of conjugate direction
                         
                         [tvector,uField] = BurgersDS_Fourier(phi,K1,K0,T,nu,N,stepscale);
                         Ntime = length(tvector);
@@ -263,12 +266,13 @@ Design (by level):
                     
                         while abs(J_step) > J_step_tol && ITER <= MAXITER
                             
-                            alpha = sum(abs(gradJ).^2)/N^2 + lambda^2*sum(abs(gradJ_x).^2)/N^2; % normalizer for beta
+                            alpha = sum(abs(gradJ).^2)/N^2 + lambda^2*sum(abs(gradJ_x).^2)/N^2; % Polak-Ribiere numerator
+                            % alpha = sum(abs(direction).^2)/N^2 + lambda^2*sum(abs(dir_x).^2)/N^2; % RMIL numerator
                             u_adj = BurgersAS_Fourier(uu,K1,K0,T,nu,N,uField,tvector,stepscale);
                             gradJ_new = eval_grad_J(u_adj,phi,K1,lambda);
                             gradJ_x_new = (2*pi*1i*K0).*gradJ_new;
                             beta = sum(gradJ_new.*conj(gradJ_new - gradJ))/N^2 ...
-                                + lambda^2*sum(gradJ_x_new.*conj(gradJ_x_new - gradJ_x))/N^2; % Polak-Ribiere conjugate direction
+                                + lambda^2*sum(gradJ_x_new.*conj(gradJ_x_new - gradJ_x))/N^2; % Polak-Ribiere/RMIL numerator
                             gradJ = gradJ_new;
                             gradJ_x = gradJ_x_new;
                             
@@ -289,9 +293,11 @@ Design (by level):
                             
                             %%% Retracted Conjugate Gradient algorithm %%%
                             direction = gradJ - beta*direction; % direction towards optimal solution
+                            % dir_x = (2*pi*1i*K0).*direction; % derivative of gradient of conjugate direction
                             tau = optimize_tau(phi,direction,tau,E,K1,K0,T,nu,N,stepscale); % compute optimal step size 
                             phi = phi + tau*direction; % iterative solution update
-                            phi = adjust_optIC(phi,E,K0,N); % retraction to constraint manifold
+                            psi = phi; % projection term
+                            phi = retraction(phi,E,K0,N); % retraction to constraint manifold
                             
                             [tvector,uField] = BurgersDS_Fourier(phi,K1,K0,T,nu,N,stepscale);
                             Ntime = length(tvector);
@@ -332,7 +338,7 @@ Design (by level):
                         phi_save(phi, timept, E0, timestart, testcase); % save optimal initial data 
                         enstest(1,p) = max(f_ens); % save max enstrophy value
                         phitest(p,:) = phi; % save optimal initial data for continuation
-                        runtime_save(runtime, testcase, E0, timept, lambda, timestart); % save runtime data for each routine
+                        runtime_save(runtime, testcase, E0, timept, lambda); % save runtime data for each routine
 
                     end %parampt
 

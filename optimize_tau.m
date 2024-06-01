@@ -17,7 +17,7 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
     tB = iniTau + 10^(-9); % initial center x
     
     phi_bar = phi + tA*grad;
-    phi_bar = adjust_optIC(phi_bar,Ens,K0,N);
+    phi_bar = retraction(phi_bar,Ens,K0,N);
     [tvec,u] = BurgersDS_Fourier(phi_bar,K1,K0,T,nu,N,stepscale);
     Ntime = length(tvec);
     uu = u(Ntime,:);
@@ -29,7 +29,7 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
         %brak_prog(uu, tA, tB, phi, phi_bar, grad, Ens); % checkpoint 0
     
     phi_bar = phi + tB*grad;
-    phi_bar = adjust_optIC(phi_bar,Ens,K0,N);
+    phi_bar = retraction(phi_bar,Ens,K0,N);
     [tvec,u] = BurgersDS_Fourier(phi_bar,K1,K0,T,nu,N,stepscale);
     Ntime = length(tvec);
     uu = u(Ntime,:);
@@ -53,7 +53,7 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
     
     tC = tB + GOLD*(tB - tA); % initial right or center x 
     phi_bar = phi + tC*grad;
-    phi_bar = adjust_optIC(phi_bar,Ens,K0,N);
+    phi_bar = retraction(phi_bar,Ens,K0,N);
     [tvec,u] = BurgersDS_Fourier(phi_bar,K1,K0,T,nu,N,stepscale);
     Ntime = length(tvec);
     uu = u(Ntime,:);
@@ -77,7 +77,7 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
     
         if (tB-tP)*(tP-tC)>0 % if tP is center x
             phi_bar = phi + tP*grad;
-            phi_bar = adjust_optIC(phi_bar,Ens,K0,N);
+            phi_bar = retraction(phi_bar,Ens,K0,N);
             [tvec,u] = BurgersDS_Fourier(phi_bar,K1,K0,T,nu,N,stepscale);
             Ntime = length(tvec);
             uu = u(Ntime,:);
@@ -103,7 +103,7 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
             
             tP = tC + GOLD*(tC-tB); % new x correction
             phi_bar = phi + tP*grad;
-            phi_bar = adjust_optIC(phi_bar,Ens,K0,N);
+            phi_bar = retraction(phi_bar,Ens,K0,N);
             [tvec,u] = BurgersDS_Fourier(phi_bar,K1,K0,T,nu,N,stepscale);
             Ntime = length(tvec);
             uu = u(Ntime,:);
@@ -117,7 +117,7 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
             
         elseif (tC-tP)*(tP-Pmax)>0
             phi_bar = phi + tP*grad;
-            phi_bar = adjust_optIC(phi_bar,Ens,K0,N);
+            phi_bar = retraction(phi_bar,Ens,K0,N);
             [tvec,u] = BurgersDS_Fourier(phi_bar,K1,K0,T,nu,N,stepscale);
             Ntime = length(tvec);
             uu = u(Ntime,:);
@@ -130,7 +130,7 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
                 FC = FP;
                 tP = tC+GOLD*(tC-tB); % new x correction
                 phi_bar = phi + tP*grad;
-                phi_bar = adjust_optIC(phi_bar,Ens,K0,N);
+                phi_bar = retraction(phi_bar,Ens,K0,N);
                 [tvec,u] = BurgersDS_Fourier(phi_bar,K1,K0,T,nu,N,stepscale);
                 Ntime = length(tvec);
                 uu = u(Ntime,:);
@@ -146,7 +146,7 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
         elseif (tP-Pmax)*(Pmax-tC)>=0
             tP = Pmax; % new x correction
             phi_bar = phi + tP*grad;
-            phi_bar = adjust_optIC(phi_bar,Ens,K0,N);
+            phi_bar = retraction(phi_bar,Ens,K0,N);
             [tvec,u] = BurgersDS_Fourier(phi_bar,K1,K0,T,nu,N,stepscale);
             Ntime = length(tvec);
             uu = u(Ntime,:);
@@ -160,7 +160,7 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
         else
             tP = tC + GOLD*(tC-tB); % new x correction
             phi_bar = phi + tP*grad;
-            phi_bar = adjust_optIC(phi_bar,Ens,K0,N);
+            phi_bar = retraction(phi_bar,Ens,K0,N);
             [tvec,u] = BurgersDS_Fourier(phi_bar,K1,K0,T,nu,N,stepscale);
             Ntime = length(tvec);
             uu = u(Ntime,:);
@@ -257,7 +257,7 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
         end
         
         phi_bar = phi + U*grad;
-        phi_bar = adjust_optIC(phi_bar,Ens,K0,N);
+        phi_bar = retraction(phi_bar,Ens,K0,N);
         [tvec,u] = BurgersDS_Fourier(phi_bar,K1,K0,T,nu,N,stepscale);
         Ntime = length(tvec);
         uu = u(Ntime,:);
