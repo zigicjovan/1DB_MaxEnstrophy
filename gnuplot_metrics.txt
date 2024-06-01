@@ -1,0 +1,58 @@
+Run "main_1DBEnstrophy_2024_v3.m" on MATLAB
+
+[open terminal]
+cd Desktop/1DB_MaxEnstrophy-main/data/diagnostics/diagnostics_E0_1000
+gnuplot
+set gr
+set au
+set term qt size 1800,1000
+plot 'diag_2048_LuMax_t1_new_E0(1000)_Timept_1_lambda(1).dat' u 1:2 w lp, 'diag_2048_LuMax_t1_new_E0(1000)_Timept_2_lambda(1).dat' u 1:2 w lp, [place a comma and add as many as necessary]
+
+Task:
+Plot several time points (Timept_1, Timept_2, ...)
+Plot higher enstrophy levels (E0(1000), E0(1258.9254), E0(1584.8932),...)
+
+FYI, for higher enstrophy levels, you will need to change the directory. Open a new terminal and write the following in the command line:
+cd Desktop/1DB_MaxEnstrophy-main/data/diagnostics/diagnostics_E0_1258.9254
+gnuplot
+set gr
+set au
+set term qt size 1800,1000
+plot 'diag_2048_LuMax_t1_new_E0(1258.9254)_Timept_1_lambda(1).dat' u 1:2 w lp, 'diag_2048_LuMax_t1_new_E0(1258.9254)_Timept_2_lambda(1).dat' u 1:2 w lp, [place a comma and add as many as necessary]
+
+(a) obj func'l / iter
+plot for [i=1:1] 'diag_2048_LuMax_t1_PR_E0(1000)_lambda(1).dat' u (column(5*i-4)):(column(5*i-3)) w lp lc 1 lw 3 title "Max", for [i=1:1] 'diag_2048_LuCont1_t1_PR_E0(1000)_lambda(1).dat' u (column(5*i-4)):(column(5*i-3)) w lp lc 3 lw 3 title "Cont1", for [i=1:25] 'diag_2048_LuMax_t1_PR_E0(1000)_lambda(1).dat' u (column(5*i-4)):(column(5*i-3)) w lp lc 1 lw 3 title "", for [i=1:25] 'diag_2048_LuCont1_t1_PR_E0(1000)_lambda(1).dat' u (column(5*i-4)):(column(5*i-3)) w lp lc 3 lw 3 title "", 
+
+(a2) runtime
+plot 'runtime_2048_LuMax_t1_PR_E0(1000)_lambda(1).dat' u 1:2 w lp lc 1 lw 3, 'runtime_2048_LuCont1_t1_PR_E0(1000)_lambda(1).dat' u 1:2 w lp lc 2 lw 3, 'runtime_2048_LuMax_t1_PR_E0(1258.9254)_lambda(1).dat' u 1:2 w lp lc 3 lw 3, 'runtime_2048_LuCont1_t1_PR_E0(1258.9254)_lambda(1).dat' u 1:2 w lp lc 4 lw 3, 'runtime_2048_LuMax_t1_PR_E0(1584.8932)_lambda(1).dat' u 1:2 w lp lc 5 lw 3, 'runtime_2048_LuCont1_t1_PR_E0(1584.8932)_lambda(1).dat' u 1:2 w lp lc 6 lw 3, 'runtime_2048_LuMax_t1_PR_E0(1995.2623)_lambda(1).dat' u 1:2 w lp lc 7 lw 3, 'runtime_2048_LuCont1_t1_PR_E0(1995.2623)_lambda(1).dat' u 1:2 w lp lc 8 lw 3, 'runtime_2048_LuMax_t1_PR_E0(2511.8864)_lambda(1).dat' u 1:2 w lp lc 1 lw 3, 'runtime_2048_LuCont1_t1_PR_E0(2511.8864)_lambda(1).dat' u 1:2 w lp lc 2 lw 3,
+
+(b) ens evol (time*)
+set key off
+plot for [i=1:25] 'terminal_2048_LuMax_t1_PR_E0(1000)_lambda(1).dat' u (column(2*i-1)):(column(2*i)) w l lc 1 lw 3, for [i=1:25] 'terminal_2048_LuMax_t1_PR_E0(1258.9254)_lambda(1).dat' u (column(2*i-1)):(column(2*i)) w l lc 2 lw 3, for [i=1:25] 'terminal_2048_LuMax_t1_PR_E0(1584.8932)_lambda(1).dat' u (column(2*i-1)):(column(2*i)) w l lc 3 lw 3, for [i=1:25] 'terminal_2048_LuMax_t1_PR_E0(1995.2623)_lambda(1).dat' u (column(2*i-1)):(column(2*i)) w l lc 4 lw 3, for [i=1:25] 'terminal_2048_LuMax_t1_PR_E0(2511.8864)_lambda(1).dat' u (column(2*i-1)):(column(2*i)) w l lc 5 lw 3,
+
+(c) branch (ens*)
+plot 'maxenstrophy_2048_LuMax_t1_PR_E0(1000)_lambda(1).dat' u 1:2 w lp, 'maxenstrophy_2048_LuMax_t1_PR_E0(1258.9254)_lambda(1).dat' u 1:2 w lp, 'maxenstrophy_2048_LuMax_t1_PR_E0(1584.8932)_lambda(1).dat' u 1:2 w lp, 'maxenstrophy_2048_LuMax_t1_PR_E0(1995.2623)_lambda(1).dat' u 1:2 w lp, 'maxenstrophy_2048_LuMax_t1_PR_E0(2511.8864)_lambda(1).dat' u 1:2 w lp,
+
+(f) power law (ens*)
+set log xy
+(unset log x, unset log y, unset log xy)
+plot 10**(1.11)*(x**(3.0/2.0)) w l lw 3 title "3/2 Power Law", 'E0_vsEmax_2048_LuMax_t1_PR_lambda(1).dat' u 1:2 w lp lw 3
+
+(d) physical solution to 1D Burgers (spectrum/spectrum_E0_1000)
+set key off
+Optimal Initial Conditions:
+plot for [i=2:2] 'optICphys_2048_LuMax_t1_new_E0(1000)_Timept_1_lambda(1).dat' u 1:i w l, for [i=2:2] 'optICphys_2048_LuMax_t1_new_E0(1000)_Timept_2_lambda(1).dat' u 1:i w l
+Maximum Enstrophy State (find state in column 4 of file in (c)):
+plot for [i=47:47] 'optICphys_2048_LuMax_t1_new_E0(1000)_Timept_1_lambda(1).dat' u 1:i w l, for [i=47:47] 'optICphys_2048_LuMax_t1_new_E0(1000)_Timept_2_lambda(1).dat' u 1:i w l
+Solution in Time (one timept at a time):
+plot for [i=2:47] 'optICphys_2048_LuMax_t1_new_E0(1000)_Timept_1_lambda(1).dat' u 1:i w l,
+
+(e) Decay of Fourier coefficients (aka Fourier spectrum) (spectrum/spectrum_E0_1000)
+set key off
+set log y
+Optimal Initial Conditions:
+plot for [i=2:2] 'optICfour_2048_LuMax_t1_new_E0(1000)_Timept_1_lambda(1).dat' u 1:i w l, for [i=2:2] 'optICfour_2048_LuMax_t1_new_E0(1000)_Timept_2_lambda(1).dat' u 1:i w l
+Maximum Enstrophy State (find state in column 4 of file in (c)):
+plot for [i=47:47] 'optICfour_2048_LuMax_t1_new_E0(1000)_Timept_1_lambda(1).dat' u 1:i w l, for [i=47:47] 'optICfour_2048_LuMax_t1_new_E0(1000)_Timept_2_lambda(1).dat' u 1:i w l
+Solution in Time (one timept at a time):
+plot for [i=2:47] 'optICfour_2048_LuMax_t1_new_E0(1000)_Timept_1_lambda(1).dat' u 1:i w l,
