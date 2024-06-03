@@ -15,4 +15,4 @@ v1_4: compute derivative (time_evol*), save max (cont/no cont)
 v2_0: slingshot search version 2, temp spectrum files (max*, time*)
 v2_1: evolution-spectrum match, delete Cont1 and Cont0 files (max_save)
 v2_2: identify redundancies (slingshots, tptest), keep sensitivity testing
-v3: clean up code and documentation
+v3: clean up code, documentation, and test ascent methods

@@ -1,7 +1,7 @@
-function main_1DBEnstrophy_2024_v3
+function main_1DBEnstrophy_2024_v3(ascent,caseID)
 
 %{
-[v3: clean up code and documentation]
+[v3: clean up code, documentation, and test ascent methods]
 Update: Jovan Zigic, 2024/05
 Contributors: Jovan Zigic, Diego Ayala, Bartosz Protas
 Description: 
@@ -48,7 +48,7 @@ Design (by level):
         tptest = 1; % slingshot search parameter
 
         for shiftT = 0:0 % "shiftT" <-> sensitivity testing || "tptest" <-> slingshot searching
-            clearvars -except shiftT tptest s shiftsign pm lamtest; 
+            clearvars -except shiftT tptest s shiftsign pm lamtest ascent caseID; 
             close all;
 
             % initialize diagnostic switches %
@@ -121,55 +121,16 @@ Design (by level):
                     phitest = NaN(ParamPoints,N);
 
                     %%% name testcase for output data %%%
-                    if s == 0
-                        testcase_max = [ '_' num2str(N) '_LuMax_t' num2str(stepscale) '_PR' ];
-                        testcase1 = [ '_' num2str(N) '_LuCont1_t' num2str(stepscale) '_PR' ];
-                        testcase0 = [ '_' num2str(N) '_LuCont0_t' num2str(stepscale) '_PR' ];
-                        %%% other initial data if CONTSET == 2 %%%
-                        testcase1_phi = [ '_' num2str(N) '_LuCont1_t' num2str(stepscale) '_short120' ];
-                        testcase0_phi = [ '_' num2str(N) '_LuCont0_t' num2str(stepscale) '_short120' ];
-                        %{
-                        %%% slingshot testing %%%
-                        testcase_max = [ '_' num2str(N) '_L1Max_t' num2str(stepscale) '_tp(' num2str(tptest) ')' ];
-                        testcase1 = [ '_' num2str(N) '_L1Cont1_t' num2str(stepscale) '_tp(' num2str(tptest) ')' ]; 
-                        testcase0 = [ '_' num2str(N) '_L1Cont0_t' num2str(stepscale) '_tp(' num2str(tptest) ')' ];
-                        %}
-                        if ss_shift ~= 0
-                            testcase_max = [ '_' num2str(N) '_L1Max_t' num2str(stepscale) '_tp(' num2str(tptest) ')_shift' num2str(ss_shift) '' ];
-                            testcase1 = [ '_' num2str(N) '_L1Cont1_t' num2str(stepscale) '_tp(' num2str(tptest) ')_shift' num2str(ss_shift) '' ]; 
-                            testcase0 = [ '_' num2str(N) '_L1Cont0_t' num2str(stepscale) '_tp(' num2str(tptest) ')_shift' num2str(ss_shift) '' ];
-                        end
-                        if shiftT ~= 0
-                            testcase_max = [ '_' num2str(N) '_LuMax_t' num2str(stepscale) '_shift' pm '' num2str(shiftT) '' ];
-                            testcase1 = [ '_' num2str(N) '_LuMax_t' num2str(stepscale) '_shift' pm '' num2str(shiftT) '' ];
-                            testcase0 = [ '_' num2str(N) '_LuMax_t' num2str(stepscale) '_shift' pm '' num2str(shiftT) '' ];
-                        end
-                    else
-                        testcase_max = [ '_' num2str(N) '_slingshot' num2str(s) 'Max_t' num2str(stepscale) '_fine50' ];
-                        testcase1 = [ '_' num2str(N) '_slingshot' num2str(s) 'Cont1_t' num2str(stepscale) '_fine50' ];
-                        testcase0 = [ '_' num2str(N) '_slingshot' num2str(s) 'Cont0_t' num2str(stepscale) '_fine50' ];
-                        testcase1_phi = [ '_' num2str(N) '_slingshot' num2str(s) 'Cont1_t' num2str(stepscale) '_short120' ];
-                        testcase0_phi = [ '_' num2str(N) '_slingshot' num2str(s) 'Cont0_t' num2str(stepscale) '_short120' ];
-                        if shiftT ~= 0
-                            testcase_max = [ '_' num2str(N) '_slingshot' num2str(s) 'Max_t' num2str(stepscale) ...
-                                '_shift' pm '' num2str(shiftT) '' ];
-                            testcase1 = [ '_' num2str(N) '_slingshot' num2str(s) 'Cont1_t' num2str(stepscale) ...
-                                '_shift' pm '' num2str(shiftT) '' ];
-                            testcase0 = [ '_' num2str(N) '_slingshot' num2str(s) 'Cont0_t' num2str(stepscale) ...
-                                '_shift' pm '' num2str(shiftT) '' ];
-                        end
-                    end
+                    [testcase_max,testcase1,testcase0] = testcase_name(caseID,N,stepscale,ascent,tptest,pm,s,shiftT,ss_shift,0);
 
                     for p = 1:ParamPoints
                 
                         if p == 1
                             CONT = 1;
                             testcase = testcase1;
-                            testcase_phi = testcase1_phi;
                         elseif p == 2
                             CONT = CONTSET;
                             testcase = testcase0;
-                            testcase_phi = testcase0_phi;
                         end
     
                         tic % start timer
@@ -184,7 +145,7 @@ Design (by level):
                             if ( CONT == 0 || CONT == 1 )
                                 [ phi , ~ ] = initialguess('exact', x, E0, 0, x_2048, timept,tptest,testcase,lambda,ss_shift);
                             elseif CONT == 2
-                                [ phi , ~ ] = initialguess('optIC', x, E0, 0, x_2048, timept,tptest,testcase_phi,lambda,ss_shift);
+                                [ phi , ~ ] = initialguess('optIC', x, E0, 0, x_2048, timept,tptest,testcase,lambda,ss_shift);
                             elseif CONT == 3 
                                 %%% choose slingshot setting %%%
                                 % shotname = ['slingshot' num2str(s) ''];
@@ -228,17 +189,43 @@ Design (by level):
                         u_adj = BurgersAS_Fourier(uu,K1,K0,T,nu,N,uField,tvector,stepscale); % solve adjoint PDE
                         gradJ = eval_grad_J(u_adj,phi,K1,lambda); % gradient of objective functional
                         gradJ_x = (2*pi*1i*K0).*gradJ; % derivative of gradient of objective functional
-                        
-                        %%% Retracted Conjugate Gradient algorithm %%%
                         phi_x = 2*pi*1i*K0.*phi; % derivative of physical data
-                        tau = -2*real( sum(phi.*conj(gradJ)) + lambda^2*sum(phi_x.*conj(gradJ_x)) ) ... 
-                            /( sum(abs(gradJ).^2) + lambda^2*sum(abs(gradJ_x).^2) ) ; % initial guess for optimal step length
-                        direction = gradJ; % direction towards optimal solution
-                        tau = optimize_tau(phi,direction,abs(0.2*tau),E,K1,K0,T,nu,N,stepscale); % compute initial optimal step size 
-                        phi = phi + tau*direction; % iterative solution update
-                        psi = phi; % projection term
+                        
+                        switch ascent
+                            case 'CGPR'
+                                %%% Conjugate Gradient algorithm with Polak-Ribiere momentum %%%
+                                tau = -2*real( sum(phi.*conj(gradJ)) + lambda^2*sum(phi_x.*conj(gradJ_x)) ) ... 
+                                    /( sum(abs(gradJ).^2) + lambda^2*sum(abs(gradJ_x).^2) ) ; % initial guess for optimal step length
+                                direction = gradJ; % direction towards optimal solution
+                                tau = optimize_tau(phi,direction,abs(0.2*tau),E,K1,K0,T,nu,N,stepscale); % compute initial optimal step size 
+                                phi = phi + tau*direction; % iterative solution update
+                            case 'CGRMIL'
+                                %%% Conjugate Gradient algorithm with RMIL momentum %%%
+                                tau = -2*real( sum(phi.*conj(gradJ)) + lambda^2*sum(phi_x.*conj(gradJ_x)) ) ... 
+                                    /( sum(abs(gradJ).^2) + lambda^2*sum(abs(gradJ_x).^2) ) ; % initial guess for optimal step length
+                                direction = gradJ; % direction towards optimal solution
+                                tau = optimize_tau(phi,direction,abs(0.2*tau),E,K1,K0,T,nu,N,stepscale); % compute initial optimal step size 
+                                phi = phi + tau*direction; % iterative solution update
+                            case 'RCGPR'
+                                %%% Riemannian Conjugate Gradient algorithm with PR momentum %%%
+                                tau = -2*real( sum(phi.*conj(gradJ)) + lambda^2*sum(phi_x.*conj(gradJ_x)) ) ... 
+                                    /( sum(abs(gradJ).^2) + lambda^2*sum(abs(gradJ_x).^2) ) ; % initial guess for optimal step length
+                                proj_gradJ = projection(gradJ,psi,K0,N,lambda); % projected gradient
+                                direction = proj_gradJ; % direction towards optimal solution
+                                tau = optimize_tau(phi,direction,abs(0.2*tau),E,K1,K0,T,nu,N,stepscale); % compute initial optimal step size 
+                                phi = phi + tau*direction; % iterative solution update
+                                psi = phi; % projection term
+                            case 'RCGRMIL'
+                                %%% Riemannian Conjugate Gradient algorithm with PR momentum %%%
+                                tau = -2*real( sum(phi.*conj(gradJ)) + lambda^2*sum(phi_x.*conj(gradJ_x)) ) ... 
+                                    /( sum(abs(gradJ).^2) + lambda^2*sum(abs(gradJ_x).^2) ) ; % initial guess for optimal step length
+                                proj_gradJ = projection(gradJ,psi,K0,N,lambda); % projected gradient
+                                direction = proj_gradJ; % direction towards optimal solution
+                                tau = optimize_tau(phi,direction,abs(0.2*tau),E,K1,K0,T,nu,N,stepscale); % compute initial optimal step size 
+                                phi = phi + tau*direction; % iterative solution update
+                                psi = phi; % projection term
+                        end
                         phi = retraction(phi,E,K0,N); % retraction to constraint manifold
-                        % dir_x = (2*pi*1i*K0).*direction; % derivative of gradient of conjugate direction
                         
                         [tvector,uField] = BurgersDS_Fourier(phi,K1,K0,T,nu,N,stepscale);
                         Ntime = length(tvector);
@@ -266,12 +253,22 @@ Design (by level):
                     
                         while abs(J_step) > J_step_tol && ITER <= MAXITER
                             
-                            alpha = sum(abs(gradJ).^2)/N^2 + lambda^2*sum(abs(gradJ_x).^2)/N^2; % Polak-Ribiere numerator
-                            % alpha = sum(abs(direction).^2)/N^2 + lambda^2*sum(abs(dir_x).^2)/N^2; % RMIL numerator
+                            switch ascent
+                                case 'CGPR'
+                                    beta_denom = sum(abs(gradJ).^2)/N^2 + lambda^2*sum(abs(gradJ_x).^2)/N^2; % Polak-Ribiere denominator
+                                case 'CGRMIL'
+                                    dir_x = (2*pi*1i*K0).*direction; % derivative of conjugate direction
+                                    beta_denom = sum(abs(direction).^2)/N^2 + lambda^2*sum(abs(dir_x).^2)/N^2; % RMIL denominator
+                                case 'RCGPR'
+                                    beta_denom = sum(abs(gradJ).^2)/N^2 + lambda^2*sum(abs(gradJ_x).^2)/N^2; % Polak-Ribiere denominator
+                                case 'RCGRMIL'
+                                    dir_x = (2*pi*1i*K0).*direction; % derivative of conjugate direction
+                                    beta_denom = sum(abs(direction).^2)/N^2 + lambda^2*sum(abs(dir_x).^2)/N^2; % RMIL denominator
+                            end
                             u_adj = BurgersAS_Fourier(uu,K1,K0,T,nu,N,uField,tvector,stepscale);
                             gradJ_new = eval_grad_J(u_adj,phi,K1,lambda);
                             gradJ_x_new = (2*pi*1i*K0).*gradJ_new;
-                            beta = sum(gradJ_new.*conj(gradJ_new - gradJ))/N^2 ...
+                            beta_num = sum(gradJ_new.*conj(gradJ_new - gradJ))/N^2 ...
                                 + lambda^2*sum(gradJ_x_new.*conj(gradJ_x_new - gradJ_x))/N^2; % Polak-Ribiere/RMIL numerator
                             gradJ = gradJ_new;
                             gradJ_x = gradJ_x_new;
@@ -288,15 +285,41 @@ Design (by level):
                             if mod(ITER,20)==0
                                 beta=0;
                             else
-                                beta = max(real(beta/alpha), 0);
+                                beta = max(real(beta_num/beta_denom), 0);
                             end
                             
-                            %%% Retracted Conjugate Gradient algorithm %%%
-                            direction = gradJ - beta*direction; % direction towards optimal solution
-                            % dir_x = (2*pi*1i*K0).*direction; % derivative of gradient of conjugate direction
-                            tau = optimize_tau(phi,direction,tau,E,K1,K0,T,nu,N,stepscale); % compute optimal step size 
-                            phi = phi + tau*direction; % iterative solution update
-                            psi = phi; % projection term
+                            switch ascent
+                                case 'CGPR'
+                                    %%% Conjugate Gradient algorithm with Polak-Ribiere momentum %%%
+                                    direction = gradJ - beta*direction; % direction towards optimal solution
+                                    tau = optimize_tau(phi,direction,tau,E,K1,K0,T,nu,N,stepscale); % compute optimal step size 
+                                    phi = phi + tau*direction; % iterative solution update
+                                case 'CGRMIL'
+                                    %%% Conjugate Gradient algorithm with RMIL momentum %%%
+                                    direction = gradJ - beta*direction; % direction towards optimal solution
+                                    tau = optimize_tau(phi,direction,tau,E,K1,K0,T,nu,N,stepscale); % compute optimal step size 
+                                    phi = phi + tau*direction; % iterative solution update
+                                case 'RCGPR'
+                                    %%% Riemannian Conjugate Gradient algorithm with PR momentum %%%
+                                    proj_gradJ = projection(gradJ,psi,K0,N,lambda);
+                                    psi_x = (2*pi*1i*K0).*psi; % derivative of projector term
+                                    trans_dir = projection(direction,psi,K0,N,lambda) ...
+                                        /( sum(abs(psi).^2) + lambda^2*sum(abs(psi_x).^2) ); % vector transport of previous direction
+                                    direction = proj_gradJ + beta*trans_dir; % direction towards optimal solution
+                                    tau = optimize_tau(phi,direction,tau,E,K1,K0,T,nu,N,stepscale); % compute optimal step size 
+                                    phi = phi + tau*direction; % iterative solution update
+                                    psi = phi; % projection term
+                                case 'RCGRMIL'
+                                    %%% Riemannian Conjugate Gradient algorithm with PR momentum %%%
+                                    proj_gradJ = projection(gradJ,psi,K0,N,lambda);
+                                    psi_x = (2*pi*1i*K0).*psi; % derivative of projector term
+                                    trans_dir = projection(direction,psi,K0,N,lambda) ...
+                                        /( sum(abs(psi).^2) + lambda^2*sum(abs(psi_x).^2) ); % vector transport of previous direction
+                                    direction = proj_gradJ + beta*trans_dir; % direction towards optimal solution
+                                    tau = optimize_tau(phi,direction,tau,E,K1,K0,T,nu,N,stepscale); % compute optimal step size 
+                                    phi = phi + tau*direction; % iterative solution update
+                                    psi = phi; % projection term
+                            end
                             phi = retraction(phi,E,K0,N); % retraction to constraint manifold
                             
                             [tvector,uField] = BurgersDS_Fourier(phi,K1,K0,T,nu,N,stepscale);
@@ -312,7 +335,7 @@ Design (by level):
                             momentum(ITER) = beta;
         
                             disp(['Completed iteration ' num2str(ITER-1)]);
-                            disp(['Runtime: ' num2str(toc)]);
+                            disp(['Current runtime: ' num2str(toc)]);
                         end
         
                         runtime = toc; % stop timer
@@ -321,7 +344,8 @@ Design (by level):
                         disp(['Time window: ' num2str(T)]);
                         disp(['Initial Enstrophy: ' num2str(E0)]);
                         disp(['Number of iterations: ' num2str(ITER-1)]);
-                        disp(['Runtime: ' num2str(runtime)]);
+                        disp(['Total Runtime: ' num2str(runtime)]);
+                        disp(['Final Relative Step: ' num2str(J_step)]);
                         
                         if ITER > MAXITER
                             disp('Optimization reached maximum number of iterations.');
