@@ -99,6 +99,7 @@ function max_save(timept,lambda,E0,testcase_max,testcase_old,testcase_other,time
         runtime_new = readmatrix(runtime_file_new);
         runtime_new( timept , : ) = runtime( timept , : ); 
         runtime = runtime_new;
+        runtime(timept,3) = runtime(timept,2) + runtime(timept-1,3);
     catch
         runtime_new = runtime( timept , : );
         runtime = runtime_new;
