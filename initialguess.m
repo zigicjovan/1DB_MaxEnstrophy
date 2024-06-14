@@ -3,12 +3,15 @@ function [ solution , T ] = initialguess(type,x,E0,a1,x_ref,timept,tptest,testca
     switch type
         case 'sine'
             solution = sqrt(E0)/pi*sin(2*pi*x - pi);
+            solution = fft(solution);
             T = 0;
         case 'sin2'
             solution = sqrt(E0)/(2*pi)*sin(4*pi*x - pi);
+            solution = fft(solution);
             T = 0;
         case '2 modes'
             solution = a1*sin(2*pi*x-pi) + sqrt( E0-(a1*pi)^2 )/(2*pi)*sin(4*pi*x-pi/7);
+            solution = fft(solution);
             T = 0;
         case 'exact'
             initialdata_file = [pwd '/optIC/LuLu_u_E010_nu3_N2048.dat'];

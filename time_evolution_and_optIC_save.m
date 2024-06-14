@@ -54,7 +54,7 @@ Part 2: Add optimal initial conditions in Fourier and Physical Space:
         i_current = ceil(length(f_ens)*(i/eval_pts));
         ut = uField(i_current,:);
         f_ens(i_current) = eval_J(ut,phi,K0,N); % enstrophy value at t_i
-        f_phi = adjust_optIC( phi , E0 + f_ens(i_current) , K0 , N ); % phi value at t_i  
+        f_phi = retraction( phi , E0 + f_ens(i_current) , K0 , N ); % phi value at t_i  
         f_phi_x = (2*pi*1i*K0).*f_phi; % spectral derivative
         optPhi_phys(:,i) = interpft(real(ifft(f_phi)),N);
         du_phys(:,i) = abs(real(ifft(f_phi_x))); % absolute value of derivative

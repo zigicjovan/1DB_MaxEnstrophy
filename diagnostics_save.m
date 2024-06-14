@@ -15,8 +15,7 @@ VERBOSE 1: Add master diagnostics file and optimal initial conditions in physica
     diagnostics(:,4) = step(1:ITER); % search step in col 4
     diagnostics(:,5) = momentum(1:ITER); % search momentum in col 5
 
-    master_file = [pwd '/data/diagnostics/diagnostics_E0_' num2str(E0)...
-        '/diag' testcase '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
+    master_file = [pwd '/data/diagnostics/diag' testcase '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
 
     % append new columns
     try

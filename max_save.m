@@ -1,14 +1,17 @@
 function max_save(timept,lambda,E0,testcase_max,testcase_old,testcase_other,timeend)
 
     %%% diagnostics 
-    master_file_old = [pwd '/data/diagnostics/diagnostics_E0_' num2str(E0)...
-        '/diag' testcase_old '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
+    master_file_old = [pwd '/data/diagnostics/diag' testcase_old '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
 
-    master_file_other = [pwd '/data/diagnostics/diagnostics_E0_' num2str(E0)...
-        '/diag' testcase_other '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
+    master_file_other = [pwd '/data/diagnostics/diag' testcase_other '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
 
-    master_file_new = [pwd '/data/diagnostics/diagnostics_E0_' num2str(E0)...
-        '/diag' testcase_max '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
+    master_file_new = [pwd '/data/diagnostics/diag' testcase_max '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
+
+    objective_file_old = [pwd '/data/diagnostics/objective' testcase_old '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
+
+    objective_file_other = [pwd '/data/diagnostics/objective' testcase_other '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
+
+    objective_file_new = [pwd '/data/diagnostics/objective' testcase_max '_E0(' num2str(E0) ')_lambda(' num2str(lambda) ').dat'];
 
     %%% runtime 
     runtime_file_old = [pwd '/data/runtime/runtime' testcase_old ...
@@ -93,6 +96,7 @@ function max_save(timept,lambda,E0,testcase_max,testcase_old,testcase_other,time
 
     % Load files
     diagnostics = readmatrix(master_file_old);
+    objective = readmatrix(objective_file_old);
 
     runtime = readmatrix(runtime_file_old);
     try
@@ -101,8 +105,13 @@ function max_save(timept,lambda,E0,testcase_max,testcase_old,testcase_other,time
         runtime = runtime_new;
         runtime(timept,3) = runtime(timept,2) + runtime(timept-1,3);
     catch
-        runtime_new = runtime( timept , : );
-        runtime = runtime_new;
+        try
+            runtime_new = runtime( timept , : );
+            runtime = runtime_new;
+        catch
+            runtime_new = runtime( 1 , : );
+            runtime = runtime_new;
+        end
     end
 
     enstrophy_time_final = readmatrix(terminal_E0_file_old);
@@ -171,8 +180,30 @@ function max_save(timept,lambda,E0,testcase_max,testcase_old,testcase_other,time
         %
     end
 
+    try
+        objective_new = readmatrix(objective_file_new);
+
+        r2_new = size(objective_new,1);
+        r2 = size(objective,1);
+
+        % append 
+        if r2_new < r2
+            objective( 1:r2_new , 1:(2*timept)-2 ) = objective_new( 1:r2_new , 1:(2*timept)-2 );
+            objective( r2_new+1:r2 , 1:(2*timept)-2 ) = NaN( r2-r2_new , (2*timept)-2 );
+        else
+            objective_x = NaN(r2_new,5*timept);
+            objective_x( 1:r2_new , 1:(2*timept)-2 ) = objective_new( 1:r2_new , 1:(2*timept)-2 );
+            objective_x( 1:r2 , (2*timept)-1:2*timept ) = objective( 1:r2 , (2*timept)-1:2*timept );
+            objective = objective_x;
+        end
+
+    catch
+        %
+    end
+
     % Save files
     writematrix(diagnostics, master_file_new,'Delimiter','tab');
+    writematrix(objective, objective_file_new,'Delimiter','tab');
     writematrix(runtime, runtime_file_new,'Delimiter','tab');
 
     writematrix(enstrophy_time_final, terminal_E0_file_new,'Delimiter','tab');
@@ -200,12 +231,14 @@ function max_save(timept,lambda,E0,testcase_max,testcase_old,testcase_other,time
 
     if timept == timeend && timept == 999 % do not delete right now
         delete(master_file_old);
+        delete(objective_file_old);
         delete(runtime_file_old);  
         delete(terminal_E0_file_old);
         delete(branch_maxE0_file_old);
         delete(branch_finalE0_file_old);
         
         delete(master_file_other);
+        delete(objective_file_other);
         delete(runtime_file_other);
         delete(terminal_E0_file_other);
         delete(branch_maxE0_file_other);

@@ -1,4 +1,4 @@
-function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
+function [result,Jeval,iterJ] = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale,Jeval,iterJ)
 % find optimal stepsize for objective functional using Brent's method %
 
     VERBOSE = 0;
@@ -22,6 +22,8 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
     Ntime = length(tvec);
     uu = u(Ntime,:);
     FA = -eval_J(uu,phi_bar,K0,N); % initial left f(x)
+    iterJ = iterJ + 1;
+    Jeval(iterJ) = -FA;
     
     if VERBOSE == 5
         tau_prog(tA, FA); % tau and f(tau) % checkpoint 0
@@ -34,6 +36,8 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
     Ntime = length(tvec);
     uu = u(Ntime,:);
     FB = -eval_J(uu,phi_bar,K0,N); % initial center f(x)
+    iterJ = iterJ + 1;
+    Jeval(iterJ) = -FB;
     
     % tau_prog(tB, FB); % tau and f(tau) % checkpoint 1
     if VERBOSE == 5
@@ -58,6 +62,8 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
     Ntime = length(tvec);
     uu = u(Ntime,:);
     FC = -eval_J(uu,phi_bar,K0,N); % initial right or center f(x)
+    iterJ = iterJ + 1;
+    Jeval(iterJ) = -FC;
     
     % brak_prog(uu, tA, tC, phi, phi_bar, grad, Ens); % checkpoint 1
     % brent_prog(tA, tB, FB, tC, phi, phi_bar, grad, Ens); % checkpoint 1
@@ -82,6 +88,8 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
             Ntime = length(tvec);
             uu = u(Ntime,:);
             FP = -eval_J(uu,phi_bar,K0,N); % new f(x)
+            iterJ = iterJ + 1;
+            Jeval(iterJ) = -FP;
     
             % tau_prog(tP, FP); % tau and f(tau) % checkpoint 2
             if VERBOSE == 5
@@ -108,6 +116,8 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
             Ntime = length(tvec);
             uu = u(Ntime,:);
             FP = -eval_J(uu,phi_bar,K0,N);
+            iterJ = iterJ + 1;
+            Jeval(iterJ) = -FP;
     
             % tau_prog(tP, FP); % tau and f(tau) % checkpoint 3
             if VERBOSE == 5
@@ -122,6 +132,8 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
             Ntime = length(tvec);
             uu = u(Ntime,:);
             FP = -eval_J(uu,phi_bar,K0,N);
+            iterJ = iterJ + 1;
+            Jeval(iterJ) = -FP;
             
             if FP<FC
                 tB = tC;
@@ -135,6 +147,8 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
                 Ntime = length(tvec);
                 uu = u(Ntime,:);
                 FP = -eval_J(uu,phi_bar,K0,N);
+                iterJ = iterJ + 1;
+                Jeval(iterJ) = -FP;
             end
     
             % tau_prog(tP, FP); % tau and f(tau) % checkpoint 4
@@ -151,6 +165,8 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
             Ntime = length(tvec);
             uu = u(Ntime,:);
             FP = -eval_J(uu,phi_bar,K0,N);
+            iterJ = iterJ + 1;
+            Jeval(iterJ) = -FP;
     
             if VERBOSE == 5
                 tau_prog(tP, FP); % tau and f(tau) % checkpoint 5
@@ -165,6 +181,8 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
             Ntime = length(tvec);
             uu = u(Ntime,:);
             FP = -eval_J(uu,phi_bar,K0,N);
+            iterJ = iterJ + 1;
+            Jeval(iterJ) = -FP;
     
             % tau_prog(tP, FP); % tau and f(tau) % checkpoint 6
             if VERBOSE == 5
@@ -262,6 +280,8 @@ function result = optimize_tau(phi,grad,iniTau,Ens,K1,K0,T,nu,N,stepscale)
         Ntime = length(tvec);
         uu = u(Ntime,:);
         FU = -eval_J(uu,phi_bar,K0,N);
+        iterJ = iterJ + 1;
+        Jeval(iterJ) = -FU;
 
         % tau_prog(U, FU); % tau and f(tau) % checkpoint 7
         if VERBOSE == 5
