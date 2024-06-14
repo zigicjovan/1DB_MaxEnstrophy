@@ -1,7 +1,7 @@
 function main_1DBEnstrophy_2024_v4_1(ascent,caseID)
 
 %{
-[v4_1: update diagnostics metrics, add Jstep1 (two-step) tolerance, remove non-Riemannian methods]
+[v4_1: update diagnostics metrics, adjust stopping criteria, remove non-Riemannian methods]
 Update: Jovan Zigic, 2024/06
 Contributors: Jovan Zigic, Diego Ayala, Bartosz Protas
 Description: 
@@ -79,15 +79,7 @@ Design (by level) - v3 update:
             lam = [ 2, 1.5, 1, 0.5, 0.25, 0.1 ];
             lambda = lam(lamtest); % smoothing parameter
             lipparameter = [ 150, 170, 190, 200, 210, 230, 250 ];
-            Lip = lipparameter(liptest); % smoothing parameter
-            %{
-            switch ascent
-                case 'RHB'
-                    Lip = 100;
-                case 'RNAG'
-                    Lip = 10;
-            end
-            %}
+            Lip = lipparameter(liptest);
             % E0 = % initial enstrophy
             % T = % length of time window
             % uField = % solution to unknown variable
@@ -221,6 +213,7 @@ Design (by level) - v3 update:
                         gradJ_x = (2*pi*1i*K0).*gradJ; % derivative of gradient of objective functional
                         phi_x = 2*pi*1i*K0.*phi; % derivative of physical data
                         
+                        %%% Gradient optimization initial step %%%
                         switch caseID
                             case 'p40'
                                 cond = 0.40; % conditioning of HB/NAG
@@ -235,11 +228,10 @@ Design (by level) - v3 update:
                             case 'p50'
                                 cond = 0.50; % conditioning of HB/NAG
                         end
-                        % cond = 0.5; % conditioning of HB/NAG
-                        % Lip = 10; % max(real(ifft(gradJ))) ; % Lipschitz constant approximation ~ upper bound of quadratic growth
+                        % cond = 0.4; % conditioning of HB/NAG
+                        % Lip = 200; % Lipschitz constant approximation ~ upper bound of quadratic growth
                         mu_bound = cond*Lip; % approximation ~ lower bound of quadratic growth
                         cond_inv = mu_bound/Lip; % inverse of condition number
-                        %%% Gradient optimization initial step %%%
                         switch ascent
                             case {'RCGPR','RCGRMIL'}
                                 %%% Riemannian Conjugate Gradient algorithm %%%
@@ -292,20 +284,19 @@ Design (by level) - v3 update:
                         momentum(ITER) = 0;
         
                         switch VERBOSE
-                            case 3 
+                            case 3  % test definition of Gateaux differential
                                 u_adj = BurgersAS_Fourier(uu,K1,K0,T,nu,N,uField,tvector,stepscale);
                                 gradJ_new = eval_grad_J(u_adj,phi,K1,lambda);
                                 gradJ_x_new = (2*pi*1i*K0).*gradJ_new;
                                 gradJ = gradJ_new;
                                 gradJ_x = gradJ_x_new;
-                                % test definition of Gateaux differential
                                 [epsilon,kappa] = kappaTestFourier(phi,gradJ,gradJ_x,J(ITER),x,K1,K0,T,nu,N,lambda,stepscale);
                                 kappa_save(kappa, epsilon, timept,E0,lambda,ITER,testcase);
                         end
                     
-                        while ( J_step > J_step_tol) && ITER <= MAXITER
+                        while ( J_step > J_step_tol ) && ( ITER <= MAXITER )
                             
-                            %%% Gradient optimization momentum %%%
+                            %%% gradient momentum adjustment %%%
                             switch ascent
                                 case {'RCGPR'}
                                     beta_denom = sum(abs(gradJ).^2)/N^2 + lambda^2*sum(abs(gradJ_x).^2)/N^2; % Polak-Ribiere denominator
@@ -350,7 +341,6 @@ Design (by level) - v3 update:
                                     phi = phi + direction; % iterative solution update
                                     psi = phi; % projection term
                                 case 'RNAG'
-                                    % compute intermediate step first
                                     d_int = phi - phi_old;
                                     trans_dir = projection(d_int,psi,K0,N,lambda); % projected previous direction
                                     phi_int = phi + beta*trans_dir;
@@ -411,10 +401,10 @@ Design (by level) - v3 update:
                             disp(['P = ' num2str(p) ' Final Relative Step: ' num2str(J_step)]);
                         end
             
-                        templam = lambda;
-                        lambda = Lip;
+                        templam = lambda; % keep this until Lip and mu_bound are chosen
+                        lambda = Lip; % keep this until Lip and mu_bound are chosen
                         switch VERBOSE
-                            case 1 % save data %
+                            case 1 % save data
                                 diagnostics_save(J,K,step,momentum,timept,lambda,E0,ITER,testcase);
                                 evaluation_save(Jeval,timept,lambda,E0,iterJ,testcase);
                                 f_ens = time_evolution_and_optIC_save(Ntime,phi,timept,E0,lambda,T,N,uField,testcase,K0,stepscale);
@@ -428,12 +418,11 @@ Design (by level) - v3 update:
                         Etest(1,p) = E;
                         runtime_save(runtime, testcase, E0, timept, lambda); % save runtime data for each routine
 
-                        lambda = templam;
+                        lambda = templam; % keep this until Lip and mu_bound are chosen
 
                     end %parampt
                     % end parallel
 
-                    % plot(real(ifft(phi))); xline(1024); yline(0);
                     % choose higher enstrophy result %
                     if enstest(1,1) > enstest(1,2) || isnan(enstest(1,2))
                         pc = 1;
