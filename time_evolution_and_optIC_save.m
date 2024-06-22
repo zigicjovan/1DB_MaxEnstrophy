@@ -22,6 +22,7 @@ Part 2: Add optimal initial conditions in Fourier and Physical Space:
     optIC_four_file = [pwd '/data/spectrum/temp/optICfour'...
         testcase '_E0(' num2str(E0) ')_Timept_'...
         num2str(timept) '_lambda(' num2str(lambda) ').dat'];
+    %{
     optIC_fourfull_file = [pwd '/data/spectrum/temp/optICfourfull'...
         testcase '_E0(' num2str(E0) ')_Timept_'...
         num2str(timept) '_lambda(' num2str(lambda) ').dat'];
@@ -31,6 +32,7 @@ Part 2: Add optimal initial conditions in Fourier and Physical Space:
     derivfdm_file = [pwd '/data/spectrum/temp/derivfdm_optICphys'...
         testcase '_E0(' num2str(E0) ')_Timept_'...
         num2str(timept) '_lambda(' num2str(lambda) ').dat'];
+    %}
 
     % Make enstrophy time growth file
     % track spectrum for enstrophy time evolution
@@ -90,6 +92,7 @@ Part 2: Add optimal initial conditions in Fourier and Physical Space:
     optPhi_four( : , all(~f_ens,1) ) = [];
     optPhi_four = [ optPhi_phys(1:K_w,1) , optPhi_four ]; 
 
+    %{
     optPhi_fourfull( : , all(~f_ens,1) ) = [];
     optPhi_fourfull = [ optPhi_phys(:,1) , optPhi_fourfull ]; 
 
@@ -98,6 +101,7 @@ Part 2: Add optimal initial conditions in Fourier and Physical Space:
 
     du_phys_fdm( : , all(~f_ens,1) ) = [];
     du_phys_fdm = [ optPhi_phys(:,1) , du_phys_fdm ]; 
+    %}
 
     f_ens( : , all(~f_ens,1) ) = []; 
     f_ens = [ 0, f_ens ]; 
@@ -129,9 +133,11 @@ Part 2: Add optimal initial conditions in Fourier and Physical Space:
     % Save spectrum files
     writematrix(optPhi_phys, optIC_phys_file,'Delimiter','tab');
     writematrix(optPhi_four, optIC_four_file,'Delimiter','tab');
+    %{
     writematrix(optPhi_fourfull, optIC_fourfull_file,'Delimiter','tab');
     writematrix(du_phys, deriv_file,'Delimiter','tab');
     writematrix(du_phys_fdm, derivfdm_file,'Delimiter','tab');
+    %}
     writematrix(enstrophy_time_final, terminal_E0_file,'Delimiter','tab');
 
 return

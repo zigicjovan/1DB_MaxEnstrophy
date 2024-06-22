@@ -38,9 +38,9 @@ Design (by level) - v3 update:
 
     s = 0; % slingshot number (0 if not using slingshot initial data)
     shiftsign = 0; % choose whether to shift time window (0: no shift, 1: positive shift, 2: negative shift)
-    lamtest = 3; % choice of smoothing parameter
+    % lamtest = 3; % choice of smoothing parameter
 
-    for liptest = 1:7 % choice of smoothing parameter
+    for lamtest = 1:1 % choice of smoothing parameter
 
         % sensitivity testing of time window perturbation % 
         if shiftsign < 2
@@ -63,10 +63,10 @@ Design (by level) - v3 update:
 
             % declare and initialize parameters %
             CONTSET = 0; % ( 0: Lu, 2: other data file, 3: slingshot testing )
-            ensstart = 1;
-            ensend = 1;
-            timestart = 1; % 
-            timeend = 10;% 
+            ensstart = 15;
+            ensend = 15;
+            timestart = 5; % 
+            timeend = 20; % 
 
             N = 2048*Nscale; % number of grid points
             MAXITER = 1000; % this should never be reached
@@ -76,10 +76,44 @@ Design (by level) - v3 update:
             K0 = [0:N/2-1 0 -N/2+1:-1]; % fourier space domain
             K1 = [0:N/2 -N/2+1:-1]; % fourier space domain for derivative 1
             nu = 0.001; % viscosity coefficient
-            lam = [ 2, 1.5, 1, 0.5, 0.25, 0.1 ];
-            lambda = lam(lamtest); % smoothing parameter
-            lipparameter = [ 150, 170, 190, 200, 210, 230, 250 ];
-            Lip = lipparameter(liptest);
+            %{
+            switch ascent
+                case 'RHB'
+                    lam = [ 4, 3 , 5, 10, 0.95 ];
+                    lambda = lam(lamtest); % smoothing parameter 
+                case 'RNAG'
+                    % lam = [ 2.5, 3 , 5, 10, 0.95 ];
+                    lambda = lamtest;%lam(lamtest); % smoothing parameter 
+            end
+            %}
+            % lam = [ 2, 3 , 5, 10, 0.95 ];
+            lambda = lamtest; % smoothing parameter          
+            % Lip = 235;% + liptest;
+            cond = 1; % conditioning of HB/NAG
+            Lip = 235; % Lipschitz constant approximation ~ upper bound of quadratic growth
+            switch caseID
+                case 'c'
+                    switch ascent
+                        case 'RHB'
+                            lambda = 4;
+                        case 'RNAG'
+                            lambda = 2.4;
+                    end
+                case 'b'
+                    switch ascent
+                        case 'RHB'
+                            cond = 0.94; % conditioning of HB/NAG
+                            Lip = 280; 
+                            lambda = 4;
+                        case 'RNAG'
+                            cond = 1; % conditioning of HB/NAG
+                            Lip = 270; 
+                            lambda = 2.2;
+                    end
+            end
+            %}
+            mu_bound = cond*Lip; % approximation ~ lower bound of quadratic growth
+            cond_inv = mu_bound/Lip; % inverse of condition number
             % E0 = % initial enstrophy
             % T = % length of time window
             % uField = % solution to unknown variable
@@ -115,10 +149,10 @@ Design (by level) - v3 update:
                         mkdir([pwd  '/data/spectrum' ]);
                         mkdir([pwd  '/data/spectrum/spectrum_E0_' num2str(E0) '' ]);
                         mkdir([pwd  '/data/spectrum/temp' ]);
-                        mkdir([pwd  '/data/kappa/kappa_E0_' num2str(E0) '' ]);
                         mkdir([pwd  '/data/runtime' ]);
                     case 3
                         mkdir([pwd  '/data/kappa' ]);
+                        mkdir([pwd  '/data/kappa/kappa_E0_' num2str(E0) '' ]);
                 end
         
                 for timept = timestart:timeend 
@@ -130,7 +164,7 @@ Design (by level) - v3 update:
                     Etest = NaN(1,ParamPoints);
 
                     %%% name testcase for output data %%%
-                    [testcase_max,testcase1,testcase0] = testcase_name(caseID,N,stepscale,ascent,tptest,pm,s,shiftT,ss_shift,0);
+                    [testcase_max,testcase1,testcase0] = testcase_name(caseID,N,stepscale,ascent,tptest,pm,s,shiftT,ss_shift,0,Lip,cond);
 
                     for p = 1:ParamPoints % do in parallel
                 
@@ -142,11 +176,13 @@ Design (by level) - v3 update:
                             testcase = testcase0;
                         end
 
+                        %{
                         if timept > timestart
                             phi = load('p_vars.mat','phi').phi;
                             psi = load('p_vars.mat','psi_save').psi_save;
                             E = load('p_vars.mat','E_save').E_save;
                         end
+                        %}
     
                         tic % start timer
                         % initialize diagnostics
@@ -214,24 +250,6 @@ Design (by level) - v3 update:
                         phi_x = 2*pi*1i*K0.*phi; % derivative of physical data
                         
                         %%% Gradient optimization initial step %%%
-                        switch caseID
-                            case 'p40'
-                                cond = 0.40; % conditioning of HB/NAG
-                            case 'p42'
-                                cond = 0.42; % conditioning of HB/NAG
-                            case 'p44'
-                                cond = 0.44; % conditioning of HB/NAG
-                            case 'p46'
-                                cond = 0.46; % conditioning of HB/NAG
-                            case 'p48'
-                                cond = 0.48; % conditioning of HB/NAG
-                            case 'p50'
-                                cond = 0.50; % conditioning of HB/NAG
-                        end
-                        % cond = 0.4; % conditioning of HB/NAG
-                        % Lip = 200; % Lipschitz constant approximation ~ upper bound of quadratic growth
-                        mu_bound = cond*Lip; % approximation ~ lower bound of quadratic growth
-                        cond_inv = mu_bound/Lip; % inverse of condition number
                         switch ascent
                             case {'RCGPR','RCGRMIL'}
                                 %%% Riemannian Conjugate Gradient algorithm %%%
@@ -360,6 +378,8 @@ Design (by level) - v3 update:
                             phi = retraction(phi,E,K0,N); % retraction to constraint manifold
                             %%%
                             
+                            uField_old = uField;
+                            Ntime_old = Ntime;
                             [tvector,uField] = BurgersDS_Fourier(phi,K1,K0,T,nu,N,stepscale);
                             Ntime = length(tvector);
                             uu = uField(Ntime,:);
@@ -379,12 +399,16 @@ Design (by level) - v3 update:
                             end
                             momentum(ITER) = beta;
         
+                            %{
                             disp(['P = ' num2str(p) ' Completed iteration ' num2str(ITER-1)]);
                             disp(['P = ' num2str(p) ' Current runtime: ' num2str(toc)]);
+                            %}
                         end
         
                         if J_step < 0
                             phi = phi_old; % cancel out negative step
+                            uField = uField_old;
+                            Ntime = Ntime_old;
                         end
 
                         runtime = toc; % stop timer
@@ -401,8 +425,6 @@ Design (by level) - v3 update:
                             disp(['P = ' num2str(p) ' Final Relative Step: ' num2str(J_step)]);
                         end
             
-                        templam = lambda; % keep this until Lip and mu_bound are chosen
-                        lambda = Lip; % keep this until Lip and mu_bound are chosen
                         switch VERBOSE
                             case 1 % save data
                                 diagnostics_save(J,K,step,momentum,timept,lambda,E0,ITER,testcase);
@@ -418,8 +440,6 @@ Design (by level) - v3 update:
                         Etest(1,p) = E;
                         runtime_save(runtime, testcase, E0, timept, lambda); % save runtime data for each routine
 
-                        lambda = templam; % keep this until Lip and mu_bound are chosen
-
                     end %parampt
                     % end parallel
 
@@ -434,8 +454,6 @@ Design (by level) - v3 update:
                         testcase_other = testcase1;
                     end
 
-                    templam = lambda;
-                    lambda = Lip;
                     % save data with higher enstrophy (continuation or no continuation) %
                     phi = phitest(pc,:);
                     max_save(timept,lambda,E0,testcase_max,testcase_old,testcase_other,timeend); 
@@ -444,12 +462,12 @@ Design (by level) - v3 update:
                         growth_save(lambda,E0,testcase_max); % save max enstrophy across branch of time windows   
                     end
 
-                    lambda = templam;
-
+                    %{
                     psi_save = psitest(pc,:);
                     E_save = Etest(1,pc);
 
                     save('p_vars.mat','phi','psi_save','E_save');
+                    %}
 
                 end %timept
             end %enspt

@@ -1,9 +1,17 @@
-function [testcase_max,testcase1,testcase0] = testcase_name(caseID,N,stepscale,ascent,tptest,pm,s,shiftT,ss_shift,sstest)
+function [testcase_max,testcase1,testcase0] = testcase_name(caseID,N,stepscale,ascent,tptest,pm,s,shiftT,ss_shift,sstest,Lip,cond)
 
     if s == 0
-        testcase_max = [ '_' num2str(N) '_LuMax_t' num2str(stepscale) '_' ascent '' caseID ];
-        testcase1 = [ '_' num2str(N) '_LuCont1_t' num2str(stepscale) '_' ascent '' caseID ];
-        testcase0 = [ '_' num2str(N) '_LuCont0_t' num2str(stepscale) '_' ascent '' caseID ];
+        switch ascent
+            case {'RHB','RNAG'}
+                testcase_max = [ '_' num2str(N) '_LuMax_t' num2str(stepscale) '_' ascent '_L' num2str(Lip) '_K' num2str(cond) '' caseID ];%'p' num2str(caseID) '' ];
+                testcase1 = [ '_' num2str(N) '_LuCont1_t' num2str(stepscale) '_' ascent '_L' num2str(Lip) '_K' num2str(cond) '' caseID ];%'p' num2str(caseID) '' ];
+                testcase0 = [ '_' num2str(N) '_LuCont0_t' num2str(stepscale) '_' ascent '_L' num2str(Lip) '_K' num2str(cond) '' caseID ];%'p' num2str(caseID) '' ];
+            case {'RCGPR','RCGRMIL'}
+                testcase_max = [ '_' num2str(N) '_LuMax_t' num2str(stepscale) '_' ascent '' caseID ];
+                testcase1 = [ '_' num2str(N) '_LuCont1_t' num2str(stepscale) '_' ascent '' caseID ];
+                testcase0 = [ '_' num2str(N) '_LuCont0_t' num2str(stepscale) '_' ascent '' caseID ];
+
+        end
         if sstest ~= 0 
             testcase_max = [ '_' num2str(N) '_L1Max_t' num2str(stepscale) '_tp(' num2str(tptest) ')_' ascent '' caseID ];
             testcase1 = [ '_' num2str(N) '_L1Cont1_t' num2str(stepscale) '_tp(' num2str(tptest) ')_' ascent '' caseID ]; 
