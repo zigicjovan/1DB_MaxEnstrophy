@@ -17,3 +17,5 @@ v2_1: evolution-spectrum match, delete Cont1 and Cont0 files (max_save)
 v2_2: identify redundancies (slingshots, tptest), keep sensitivity testing
 v3: clean up code, documentation, and test ascent methods
 v4: parallel computation of branch optimization
+v4_1: update diagnostics metrics, adjust stopping criteria, remove non-Riemannian methods
+v4_2: add RNAG/RHB variants: {'RSNAG','RBNAG','RBNAGa','RAHB'}

@@ -2,7 +2,7 @@ function [testcase_max,testcase1,testcase0] = testcase_name(caseID,N,stepscale,a
 
     if s == 0
         switch ascent
-            case {'RHB','RNAG'}
+            case {'RHB','RAHB','RNAG','RSNAG','RBNAG','RBNAGa'}
                 testcase_max = [ '_' num2str(N) '_LuMax_t' num2str(stepscale) '_' ascent '_L' num2str(Lip) '_K' num2str(cond) '' caseID ];%'p' num2str(caseID) '' ];
                 testcase1 = [ '_' num2str(N) '_LuCont1_t' num2str(stepscale) '_' ascent '_L' num2str(Lip) '_K' num2str(cond) '' caseID ];%'p' num2str(caseID) '' ];
                 testcase0 = [ '_' num2str(N) '_LuCont0_t' num2str(stepscale) '_' ascent '_L' num2str(Lip) '_K' num2str(cond) '' caseID ];%'p' num2str(caseID) '' ];
