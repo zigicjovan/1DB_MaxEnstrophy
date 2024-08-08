@@ -19,3 +19,4 @@ v3: clean up code, documentation, and test ascent methods
 v4: parallel computation of branch optimization
 v4_1: update diagnostics metrics, adjust stopping criteria, remove non-Riemannian methods
 v4_2: add RNAG/RHB variants: {'RSNAG','RBNAG','RBNAGa','RAHB'}
+v4_3: add stochastic variants: {'RSCG','RMSCG','RDSCG','RJSCG'}
