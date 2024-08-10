@@ -270,7 +270,7 @@ function max_save(timept,lambda,E0,testcase_max,testcase_old,testcase_other,time
     delete(derivfdm_file_other);
     %}
 
-    if timept == timeend && timept == 999 % do not delete right now
+    if timept == timeend % && timept == 999
         delete(master_file_old);
         delete(objective_file_old);
         delete(runtime_file_old);  

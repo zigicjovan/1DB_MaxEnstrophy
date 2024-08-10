@@ -63,8 +63,8 @@ Design (by level) - v3 update:
 
             % declare and initialize parameters %
             CONTSET = 0; % ( 0: Lu, 2: other data file, 3: slingshot testing )
-            ensstart = 1;
-            ensend = 15;
+            ensstart = 16;
+            ensend = 21;
             timestart = 5; % 
             timeend = 20; % 
 
@@ -77,9 +77,7 @@ Design (by level) - v3 update:
             K1 = [0:N/2 -N/2+1:-1]; % fourier space domain for derivative 1
             nu = 0.001; % viscosity coefficient
 
-            lam = [ 1 , 1.7 , 2, 2.5 , 3, 3.5, 4, 5, 10];
-            lambda = lam(lamtest); % smoothing parameter          
-            % Lip = 235;% + liptest;
+            lambda = 1; % smoothing parameter          
             cond = 1; % conditioning of HB/NAG
             Lip = 235; % Lipschitz constant approximation ~ upper bound of quadratic growth
             switch caseID
@@ -114,7 +112,7 @@ Design (by level) - v3 update:
             end
             % enspt = ensstart; % choose enstrophy point to test
 
-            for enspt = ensstart:ensend % "enspt" <-> enstrophy point || "ss_shift" <-> shift slingshot initial data
+            for enspt = ensstart:5:ensend % "enspt" <-> enstrophy point || "ss_shift" <-> shift slingshot initial data
 
                 % choose time windows to test at each E0 %
                 E0 = Enstrophy(enspt);
@@ -372,13 +370,14 @@ Design (by level) - v3 update:
                                 case 'RSCG'
                                     minITER = 1; % RSCG (Stochastic)
                                 case 'RMSCG'
-                                    minITER = max(1,ceil(3*ITER/4)); % RMSCG (Minor-Stochastic)
+                                    num = str2double(caseID);
+                                    minITER = max(1,ceil((num-1)*ITER/num)); % RmSCG (Minor-Stochastic)
                                 case 'RDSCG'
-                                    minITER = max(1,ceil(3*ITER/4)); % RHSCG (Demi-Stochastic)
+                                    minITER = max(1,ceil(1*ITER/2)); % RDSCG (Demi-Stochastic)
                                 case 'RJSCG'
-                                    minITER = max(1,ceil(3*ITER/4)); % RHSCG (Major-Stochastic)
-                            end
-                            rand_gradJ = save_gradJ(randi([minITER,ITER]),1:length(gradJ));
+                                    num = str2double(caseID);
+                                    minITER = max(1,ceil(1*ITER/num)); % RMSCG (Major-Stochastic)                                    
+                            end                            
                             
                             %%% Gradient optimization iterative step %%%
                             switch ascent
@@ -393,6 +392,7 @@ Design (by level) - v3 update:
                                     % phi = retraction(phi,E,K0,N); % retraction to constraint manifold
                                     psi = phi; % projection term
                                 case {'RSCG','RMSCG','RDSCG','RJSCG'}
+                                    rand_gradJ = save_gradJ(randi([minITER,ITER]),1:length(gradJ)); % choose random gradient direction
                                     proj_gradJ = projection(rand_gradJ,psi,K0,N,lambda);
                                     psi_x = (2*pi*1i*K0).*psi; % derivative of projector term
                                     trans_dir = projection(direction,psi,K0,N,lambda) ...
