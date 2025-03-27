@@ -53,7 +53,7 @@ Design (by level) - v3 update:
         tptest = 1; % slingshot search parameter
 
         for shiftT = 0:0 % "shiftT" <-> sensitivity testing || "tptest" <-> slingshot searching
-            clearvars -except shiftT tptest s shiftsign pm lamtest ascent caseID liptest condtest; 
+            clearvars -except shiftT tptest s shiftsign pm lamtest ascent caseID liptest condtest s_w testnumber; 
             close all;
 
             % initialize diagnostic switches %
