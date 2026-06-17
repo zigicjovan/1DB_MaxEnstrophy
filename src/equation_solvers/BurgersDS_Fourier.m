@@ -1,4 +1,4 @@
-function [tvec,solution]=BurgersDS_Fourier(u0_hat,K1,K0,T,nu,N,stepscale)
+function [tvector,solution,Ntime,u_TC] = BurgersDS_Fourier(u0_hat,K1,K0,T,nu,N,stepscale)
 
 %{
 K1: fourier space domain for derivative 1 
@@ -16,9 +16,9 @@ N: number of grid points
     end
     dt = dt / stepscale;                    % adjust time step manually
     Ntime = ceil(T/dt);                     %
-    tvec = linspace(0,T,Ntime);             %
-    tvec = tvec.';                          %
-    dt = tvec(2) - tvec(1);                 %
+    tvector = linspace(0,T,Ntime);             %
+    tvector = tvector.';                          %
+    dt = tvector(2) - tvector(1);                 %
     
     solution = zeros(Ntime,N);              %
     solution(1,:) = u0_hat;                 %
@@ -41,6 +41,9 @@ N: number of grid points
         u0_hat = u1_hat;            %
             
     end
+
+    Ntime = length(tvector);                                                % number of time-steps in PDE solution 
+    u_TC = solution(Ntime,:);                                               % physical solution at final time-step
 
 return
 
