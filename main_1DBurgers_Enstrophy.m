@@ -12,7 +12,7 @@ function main_1DBurgers_Enstrophy(testnumber)
     Papers:
         1) Maximum Enstrophy Growth in Burgers Equation, D. Ayala, 2010 (MS Thesis)
         2) On maximum enstrophy growth in a hydrodynamic system, D. Ayala and B. Protas, 2011 (Physica D)
-        3) Search for Distinct Maximizers to Finite-Time Enstrophy Growth in One-Dimensional Burgers Flows, J. Zigic, 2024 (unpublished)
+        3) Riemannian Conjugate Gradient Method for 1D Burgers Enstrophy Maximization, J. Zigic, 2026 (unpublished)
     Design:
     1. Choose initial enstrophy values for computation.
         Default: E0 = 1000 <-> compute for initial enstrophy of 1000.
