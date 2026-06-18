@@ -63,7 +63,7 @@ cd spectrum/spectrum_E0_1000/
 
 set xlabel "Physical Space" font "Helvetica,20"
 set ylabel "Solution" font "Helvetica,20"
-plot for [i=2:*] 'optICphys_2048_LuMax_t1_RCGPR1_E0(1000)_Timept_1_lambda(1).dat' u ($1/2048-0.5):i w l lc 8 lw 3 title ""
+plot for [i=2:2] 'optICphys_2048_LuMax_t1_RCGPR1_E0(1000)_Timept_1_lambda(1).dat' u ($1/2048-0.5):i w l lc 8 lw 3 title ""
 
 ## Time-dependent physical solution to 1D Burgers
 
